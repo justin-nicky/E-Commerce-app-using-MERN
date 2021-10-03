@@ -7,7 +7,7 @@ const Footer = () => {
       <Container>
         <Row>
           <Col className='text-center py-3'>
-            <h5>Copyright &copy; Proshop</h5>
+            <p>Copyright &copy; Proshop</p>
           </Col>
         </Row>
       </Container>
