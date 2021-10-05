@@ -30,7 +30,7 @@ const ProductScreen = ({ match }) => {
       </Link>
       <Row>
         <Col md={5}>
-          <Image src={product.image} alt={product.name} fluid />
+          <Image src={product.previewImage} alt={product.name} fluid />
         </Col>
 
         <Col md={4}>
