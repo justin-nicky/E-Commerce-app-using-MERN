@@ -29,11 +29,11 @@ const userSchema = mongoose.Schema(
     },
     addresses: [addressSchema],
     defaultAddress: {
-      building: { type: String, requred: true },
-      city: { type: String, required: true },
-      postalCode: { type: String, required: true },
-      state: { type: String, required: true },
-      country: { type: String, required: true },
+      building: { type: String },
+      city: { type: String },
+      postalCode: { type: String },
+      state: { type: String },
+      country: { type: String },
     },
   },
   { timestamps: true }
@@ -42,6 +42,14 @@ const userSchema = mongoose.Schema(
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password)
 }
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next()
+  }
+  const salt = await bcrypt.genSalt(10)
+  this.password = await bcrypt.hash(this.password, salt)
+})
 
 const User = mongoose.model('User', userSchema)
 
