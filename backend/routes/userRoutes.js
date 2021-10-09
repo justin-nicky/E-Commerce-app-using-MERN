@@ -3,12 +3,14 @@ import {
   authUser,
   getUserProfile,
   registerUser,
+  googleSignInUser,
 } from '../controllers/userController.js'
 import { protect } from '../middleware/authMiddleware.js'
 
 const router = express.Router()
 
 router.route('/').post(registerUser)
+router.post('/signinwithgoogle', googleSignInUser)
 router.post('/login', authUser)
 router.route('/profile').get(protect, getUserProfile)
 

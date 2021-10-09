@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Form, Button, Col, Row } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
+import { GoogleLogin } from 'react-google-login'
 import FormContainer from '../Components/FormContainer'
 import Center from '../Components/Center'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
-import { login } from '../actions/userActions'
+import { googleSignIn, login } from '../actions/userActions'
 
 const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('')
@@ -18,6 +19,15 @@ const LoginScreen = ({ location, history }) => {
   const { loading, userInfo, error } = userLogin
 
   const redirect = location.search ? location.search.split('=')[1] : '/'
+
+  const googleAuthSuccessHandler = async (res) => {
+    const token = res.getAuthResponse().id_token
+    dispatch(googleSignIn(token))
+  }
+
+  const googleAuthFailureHandler = (error) => {
+    console.log(error)
+  }
 
   useEffect(() => {
     if (userInfo) {
@@ -70,6 +80,21 @@ const LoginScreen = ({ location, history }) => {
           </Button>
         </Center>
       </Form>
+      <Center>
+        <Form.Text className='text-muted my-3'>
+          --------------------- or ---------------------
+        </Form.Text>
+      </Center>
+      <Center>
+        <GoogleLogin
+          clientId='281012013724-s56cgsgh6afak08a1r09lj3j4baef7fv.apps.googleusercontent.com'
+          buttonText='Sign In With Google'
+          disabled={false}
+          onSuccess={googleAuthSuccessHandler}
+          onFailure={googleAuthFailureHandler}
+          cookiePolicy={'single_host_origin'}
+        />
+      </Center>
       <Row className='py-3'>
         <Col>
           New user?{' '}

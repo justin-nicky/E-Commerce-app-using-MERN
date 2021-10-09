@@ -1,6 +1,7 @@
 import User from '../models/userModel.js'
 import asyncHandler from 'express-async-handler'
 import generateToken from '../utils/generateToken.js'
+import { OAuth2Client } from 'google-auth-library'
 
 // @desc   Auth user and get token
 // @route  POST /api/users/login
@@ -15,6 +16,7 @@ const authUser = asyncHandler(async (req, res) => {
       res.status(401)
       throw new Error('Incorrect Password.')
     }
+
     res.json({
       _id: user._id,
       name: user.name,
@@ -60,6 +62,49 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 })
 
+// @desc   Register or Login new user using google auth
+// @route  POST /api/users/loginwithgoogle
+// @access Public
+const googleSignInUser = asyncHandler(async (req, res) => {
+  try {
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+    const ticket = await client.verifyIdToken({
+      idToken: req.body?.credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    })
+    const payload = ticket.getPayload()
+    const { email, name } = payload
+
+    const user = await User.findOne({ email })
+    if (user) {
+      res.status(200)
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        token: generateToken(user._id),
+      })
+    } else {
+      const user = await User.create({
+        name,
+        email,
+      })
+      res.status(201)
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        token: generateToken(user._id),
+      })
+    }
+  } catch (error) {
+    res.status(400)
+    throw new Error('Google Authentication failed')
+  }
+})
+
 // @desc   Get user profile
 // @route  GET /api/users/profile
 // @access Private
@@ -75,4 +120,4 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 })
 
-export { authUser, getUserProfile, registerUser }
+export { authUser, getUserProfile, registerUser, googleSignInUser }
