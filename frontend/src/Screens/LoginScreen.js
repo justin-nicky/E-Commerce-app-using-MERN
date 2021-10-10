@@ -30,7 +30,9 @@ const LoginScreen = ({ location, history }) => {
   }
 
   useEffect(() => {
-    if (userInfo) {
+    if (userInfo?.isAdmin) {
+      history.push('/admin')
+    } else if (userInfo) {
       history.push(redirect)
     }
   }, [userInfo, redirect, history])

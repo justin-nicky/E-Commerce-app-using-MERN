@@ -76,11 +76,12 @@ export const googleSignIn = (token) => async (dispatch) => {
 
     const { data } = await axios.post(
       '/api/users/signinwithgoogle',
-      { token },
+      { credential: token },
       config
     )
 
     dispatch({ type: USER_GOOGLE_SIGNIN_SUCCESS, payload: data })
+    dispatch({ type: USER_LOGIN_SUCCESS, payload: data })
     localStorage.setItem('userInfo', JSON.stringify(data))
   } catch (error) {
     dispatch({

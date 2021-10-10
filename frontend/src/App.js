@@ -6,6 +6,11 @@ import HomeScreen from './Screens/HomeScreen'
 import ProductScreen from './Screens/ProductScreen'
 import LoginScreen from './Screens/LoginScreen'
 import RegisterScreen from './Screens/RegisterScreen'
+import AdminDashboard from './Screens/AdminDashboard'
+import ProductManage from './Screens/ProductManage'
+import UserManage from './Screens/UserManage'
+import CategoryManage from './Screens/CategoryManage'
+import OrderManage from './Screens/OrderManage'
 
 const App = () => {
   return (
@@ -17,6 +22,11 @@ const App = () => {
           <Route path='/login' component={LoginScreen} />
           <Route path='/register' component={RegisterScreen} />
           <Route path='/product/:id' component={ProductScreen} />
+          <Route path='/admin' component={AdminDashboard} />
+          <Route path='/manageproducts' component={ProductManage} />
+          <Route path='/manageusers' component={UserManage} />
+          <Route path='/managecategories' component={CategoryManage} />
+          <Route path='/manageorders' component={OrderManage} />
         </Container>
       </main>
       <Footer />
