@@ -2,6 +2,7 @@ import User from '../models/userModel.js'
 import asyncHandler from 'express-async-handler'
 import generateToken from '../utils/generateToken.js'
 import { OAuth2Client } from 'google-auth-library'
+import mongoose from 'mongoose'
 
 // @desc   Auth user and get token
 // @route  POST /api/users/login
@@ -120,4 +121,36 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 })
 
-export { authUser, getUserProfile, registerUser, googleSignInUser }
+// @desc   Get all users
+// @route  GET /api/users
+// @access Private/Admin
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({}).select('-password')
+  res.json(users)
+})
+
+// @desc   patch a user
+// @route  PATCH /api/users
+// @access Private/Admin
+const updateUser = asyncHandler(async (req, res, next) => {
+  const isIdValid = mongoose.Types.ObjectId.isValid(req.params.id)
+  if (isIdValid) {
+    console.log(req.body)
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    }).select('-password')
+
+    res.json({ user: user })
+  } else {
+    next()
+  }
+})
+
+export {
+  authUser,
+  getUserProfile,
+  registerUser,
+  googleSignInUser,
+  getAllUsers,
+  updateUser,
+}

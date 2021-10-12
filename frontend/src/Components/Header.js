@@ -28,16 +28,16 @@ const Header = () => {
               <Navbar.Collapse id='basic-navbar-nav'>
                 <Nav className='ms-auto'>
                   <NavDropdown title='Manage' id='username'>
-                    <LinkContainer to='/manageproducts'>
+                    <LinkContainer to='/admin/manageproducts'>
                       <NavDropdown.Item>Products</NavDropdown.Item>
                     </LinkContainer>
-                    <LinkContainer to='/manageusers'>
+                    <LinkContainer to='/admin/manageusers'>
                       <NavDropdown.Item>Users</NavDropdown.Item>
                     </LinkContainer>
-                    <LinkContainer to='/manageorders'>
+                    <LinkContainer to='/admin/manageorders'>
                       <NavDropdown.Item>Orders</NavDropdown.Item>
                     </LinkContainer>
-                    <LinkContainer to='/managecategories'>
+                    <LinkContainer to='/admin/managecategories'>
                       <NavDropdown.Item>Categories</NavDropdown.Item>
                     </LinkContainer>
                   </NavDropdown>

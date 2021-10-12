@@ -22,11 +22,11 @@ const App = () => {
           <Route path='/login' component={LoginScreen} />
           <Route path='/register' component={RegisterScreen} />
           <Route path='/product/:id' component={ProductScreen} />
-          <Route path='/admin' component={AdminDashboard} />
-          <Route path='/manageproducts' component={ProductManage} />
-          <Route path='/manageusers' component={UserManage} />
-          <Route path='/managecategories' component={CategoryManage} />
-          <Route path='/manageorders' component={OrderManage} />
+          <Route path='/admin' component={AdminDashboard} exact />
+          <Route path='/admin/manageproducts' component={ProductManage} />
+          <Route path='/admin/manageusers' component={UserManage} />
+          <Route path='/admin/managecategories' component={CategoryManage} />
+          <Route path='/admin/manageorders' component={OrderManage} />
         </Container>
       </main>
       <Footer />

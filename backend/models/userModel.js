@@ -21,6 +21,11 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    isDisabled: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     wallet: {
       type: Number,
       required: true,
