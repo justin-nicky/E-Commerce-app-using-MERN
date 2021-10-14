@@ -11,6 +11,7 @@ import ProductManage from './Screens/ProductManage'
 import UserManage from './Screens/UserManage'
 import CategoryManage from './Screens/CategoryManage'
 import OrderManage from './Screens/OrderManage'
+import ProductEditScreen from './Screens/ProductEditScreen'
 
 const App = () => {
   return (
@@ -27,6 +28,7 @@ const App = () => {
           <Route path='/admin/manageusers' component={UserManage} />
           <Route path='/admin/managecategories' component={CategoryManage} />
           <Route path='/admin/manageorders' component={OrderManage} />
+          <Route path='/admin/product/:id/edit' component={ProductEditScreen} />
         </Container>
       </main>
       <Footer />
