@@ -47,7 +47,7 @@ const ProductEditScreen = ({ match, history }) => {
         setPreviewImage(product.previewImage)
         setBrand(product.brand)
         setCategory(product.category)
-        setCategory(product.subCategory)
+        setSubCategory(product.subCategory)
         setCountInStock(product.countInStock)
         setDescription(product.description)
       }
@@ -101,7 +101,7 @@ const ProductEditScreen = ({ match, history }) => {
         Go Back
       </Link>
       <FormContainer>
-        <h1>Edit Product</h1>
+        <h3>Edit Product</h3>
         {loadingUpdate && <Loader />}
         {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
         {loading ? (
@@ -140,8 +140,8 @@ const ProductEditScreen = ({ match, history }) => {
               ></Form.Control>
               <Form.File
                 id='image-file'
-                label='Choose File'
                 custom
+                accept='image/*'
                 onChange={uploadFileHandler}
               ></Form.File>
               {uploading && <Loader />}
