@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
 import FormContainer from '../Components/FormContainer'
+import Center from '../Components/Center'
 import { listProductDetails, updateProduct } from '../actions/productActions'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 
@@ -186,10 +187,11 @@ const ProductEditScreen = ({ match, history }) => {
                 onChange={(e) => setDescription(e.target.value)}
               ></Form.Control>
             </Form.Group>
-
-            <Button type='submit' variant='primary'>
-              Update
-            </Button>
+            <Center>
+              <Button type='submit' variant='primary' className='m-3'>
+                Update
+              </Button>
+            </Center>
           </Form>
         )}
       </FormContainer>
