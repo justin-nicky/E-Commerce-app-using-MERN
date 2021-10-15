@@ -15,6 +15,10 @@ import {
   userListReducer,
   userDisableReducer,
 } from './reducers/userReducer'
+import {
+  categoryCreateReducer,
+  categoryListReducer,
+} from './reducers/categoryReducer'
 
 const reducer = combineReducers({
   productList: productListReducer,
@@ -27,6 +31,8 @@ const reducer = combineReducers({
   userGoogleSignIn: userGoogleSignInReducer,
   userList: userListReducer,
   userDisable: userDisableReducer,
+  categoryCreate: categoryCreateReducer,
+  categoryList: categoryListReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo')

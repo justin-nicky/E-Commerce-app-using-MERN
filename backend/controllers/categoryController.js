@@ -37,6 +37,6 @@ export const createCategory = asyncHandler(async (req, res) => {
 // @route  GET /api/categories
 // @access Private/Admin
 export const getAllCategories = asyncHandler(async (req, res) => {
-  const categories = await User.find({})
+  const categories = await Category.find({})
   res.json(categories)
 })
