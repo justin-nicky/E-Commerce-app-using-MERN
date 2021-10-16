@@ -1,13 +1,14 @@
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Form, Button } from 'react-bootstrap'
+import { Form, Button, FormSelect } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
 import FormContainer from '../Components/FormContainer'
 import Center from '../Components/Center'
 import { listProductDetails, updateProduct } from '../actions/productActions'
+import { listCategories } from '../actions/categoryActions'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 
 const ProductEditScreen = ({ match, history }) => {
@@ -22,6 +23,8 @@ const ProductEditScreen = ({ match, history }) => {
   const [countInStock, setCountInStock] = useState(0)
   const [description, setDescription] = useState('')
   const [uploading, setUploading] = useState(false)
+  //const [subShow, setSubShow] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState([])
 
   const dispatch = useDispatch()
 
@@ -35,24 +38,40 @@ const ProductEditScreen = ({ match, history }) => {
     success: successUpdate,
   } = productUpdate
 
+  const categoryList = useSelector((state) => state.categoryList)
+  const {
+    loading: categoryListLoading,
+    error: categoryListError,
+    categories,
+  } = categoryList
+
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
+
   useEffect(() => {
+    if (!userInfo || !userInfo.isAdmin) {
+      history.push('/login')
+    }
+
+    dispatch(listCategories())
     if (successUpdate) {
       dispatch({ type: PRODUCT_UPDATE_RESET })
       history.push('/admin/manageproducts')
-    } else {
-      if (!product.name || product._id !== productId) {
-        dispatch(listProductDetails(productId))
-      } else {
-        setName(product.name)
-        setPrice(product.price)
-        setPreviewImage(product.previewImage)
-        setBrand(product.brand)
-        setCategory(product.category)
-        setSubCategory(product.subCategory)
-        setCountInStock(product.countInStock)
-        setDescription(product.description)
-      }
     }
+    //else {
+    if (!product.name || product._id !== productId) {
+      dispatch(listProductDetails(productId))
+    } else {
+      setName(product.name)
+      setPrice(product.price)
+      setPreviewImage(product.previewImage)
+      setBrand(product.brand)
+      setCategory(product.category)
+      setSubCategory(product.subCategory)
+      setCountInStock(product.countInStock)
+      setDescription(product.description)
+    }
+    //}
   }, [dispatch, history, productId, product, successUpdate])
 
   const uploadFileHandler = async (e) => {
@@ -87,7 +106,7 @@ const ProductEditScreen = ({ match, history }) => {
         price,
         previewImage,
         images: [],
-        subCategory: '',
+        subCategory,
         brand,
         category,
         description,
@@ -96,6 +115,14 @@ const ProductEditScreen = ({ match, history }) => {
     )
   }
 
+  const categorySelectHandler = (e) => {
+    setCategory(e.target.value)
+    let category = categories.filter(
+      (category) => category.category === e.target.value
+    )
+    category = category[0].subCategory
+    setSelectedCategory(category)
+  }
   return (
     <>
       <Link to='/admin/manageproducts' className='btn btn-light my-3'>
@@ -140,11 +167,13 @@ const ProductEditScreen = ({ match, history }) => {
                 onChange={(e) => setPreviewImage(e.target.value)}
               ></Form.Control>
               <Form.File
+                className='custom-file-input'
                 id='image-file'
                 custom
                 accept='image/*'
                 onChange={uploadFileHandler}
               ></Form.File>
+
               {uploading && <Loader />}
             </Form.Group>
 
@@ -168,16 +197,6 @@ const ProductEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='category'>
-              <Form.Label>Category</Form.Label>
-              <Form.Control
-                type='text'
-                placeholder='Enter category'
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
             <Form.Group controlId='description'>
               <Form.Label>Description</Form.Label>
               <Form.Control
@@ -187,6 +206,41 @@ const ProductEditScreen = ({ match, history }) => {
                 onChange={(e) => setDescription(e.target.value)}
               ></Form.Control>
             </Form.Group>
+
+            <Form.Group className='mb-3'>
+              <Form.Label>Category</Form.Label>
+              <select
+                aria-label='Default select example'
+                onChange={categorySelectHandler}
+                className='form-control'
+              >
+                <option>{category}</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category.category}>
+                    {category.category}
+                  </option>
+                ))}
+              </select>
+            </Form.Group>
+
+            <Form.Group className='mb-3'>
+              <Form.Label>Sub-category</Form.Label>
+              <select
+                aria-label='Default select example'
+                onChange={(e) => {
+                  setSubCategory(e.target.value)
+                }}
+                className='form-control'
+              >
+                <option>{subCategory}</option>
+                {selectedCategory.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </Form.Group>
+
             <Center>
               <Button type='submit' variant='primary' className='m-3'>
                 Update

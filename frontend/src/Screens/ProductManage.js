@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
-import { Table, Button, Row, Col } from 'react-bootstrap'
+import { Table, Button, Row, Col, Modal } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
+import Center from '../Components/Center'
 //import Paginate from '../components/Paginate'
 import {
   listProducts,
@@ -19,6 +20,13 @@ const ProductManage = ({ history, match }) => {
 
   const productList = useSelector((state) => state.productList)
   const { loading, error, products, page, pages } = productList
+
+  const [modal, setModal] = useState({
+    show: false,
+    id: null,
+    // disable: null,
+    name: null,
+  })
 
   const productDelete = useSelector((state) => state.productDelete)
   const {
@@ -60,9 +68,9 @@ const ProductManage = ({ history, match }) => {
   ])
 
   const deleteHandler = (id) => {
-    if (window.confirm('Are you sure')) {
-      dispatch(deleteProduct(id))
-    }
+    //if (window.confirm('Are you sure')) {
+    dispatch(deleteProduct(id))
+    //}
   }
 
   const createProductHandler = () => {
@@ -117,7 +125,13 @@ const ProductManage = ({ history, match }) => {
                     <Button
                       variant='danger'
                       className='btn-sm'
-                      onClick={() => deleteHandler(product._id)}
+                      onClick={() =>
+                        setModal({
+                          show: true,
+                          id: product._id,
+                          name: product.name,
+                        })
+                      }
                     >
                       <i className='fas fa-trash'></i>
                     </Button>
@@ -127,6 +141,48 @@ const ProductManage = ({ history, match }) => {
             </tbody>
           </Table>
           {/* <Paginate pages={pages} page={page} isAdmin={true} /> */}
+
+          <Modal
+            show={modal.show}
+            onHide={() => setModal({ ...modal, show: false })}
+            size='sm'
+            aria-labelledby='contained-modal-title-vcenter'
+            centered
+          >
+            <Modal.Body className='m-2'>
+              <h5>Are you sure you want to delete {modal.name}?</h5>
+
+              <Center>
+                <Button
+                  className='mx-3'
+                  variant='danger'
+                  onClick={() => {
+                    deleteHandler(modal.id)
+                    setModal({
+                      show: false,
+                      id: null,
+                      name: null,
+                    })
+                  }}
+                >
+                  Yes
+                </Button>
+                <Button
+                  className='mx-3'
+                  variant='secondary'
+                  onClick={() =>
+                    setModal({
+                      show: false,
+                      id: null,
+                      name: null,
+                    })
+                  }
+                >
+                  Cancel
+                </Button>
+              </Center>
+            </Modal.Body>
+          </Modal>
         </>
       )}
     </>
