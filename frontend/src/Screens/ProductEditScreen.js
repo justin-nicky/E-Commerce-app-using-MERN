@@ -1,7 +1,7 @@
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Form, Button, FormSelect } from 'react-bootstrap'
+import { Form, Button, Container, Modal, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
@@ -25,6 +25,7 @@ const ProductEditScreen = ({ match, history }) => {
   const [uploading, setUploading] = useState(false)
   //const [subShow, setSubShow] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState([])
+  const [modal, setModal] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -72,7 +73,7 @@ const ProductEditScreen = ({ match, history }) => {
       setDescription(product.description)
     }
     //}
-  }, [dispatch, history, productId, product, successUpdate])
+  }, [dispatch, history, productId, product, successUpdate, userInfo])
 
   const uploadFileHandler = async (e) => {
     const file = e.target.files[0]
@@ -97,8 +98,7 @@ const ProductEditScreen = ({ match, history }) => {
     }
   }
 
-  const submitHandler = (e) => {
-    e.preventDefault()
+  const submitHandler = () => {
     dispatch(
       updateProduct({
         _id: productId,
@@ -137,7 +137,11 @@ const ProductEditScreen = ({ match, history }) => {
         ) : error ? (
           <Message variant='danger'>{error}</Message>
         ) : (
-          <Form onSubmit={submitHandler}>
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault()
+            }}
+          >
             <Form.Group controlId='name'>
               <Form.Label>Name</Form.Label>
               <Form.Control
@@ -242,13 +246,129 @@ const ProductEditScreen = ({ match, history }) => {
             </Form.Group>
 
             <Center>
-              <Button type='submit' variant='primary' className='m-3'>
+              <Button
+                type='submit'
+                variant='primary'
+                className='m-3'
+                onClick={() => {
+                  setModal(true)
+                }}
+              >
                 Update
               </Button>
             </Center>
           </Form>
         )}
       </FormContainer>
+
+      {/* //////////////modal///////////// */}
+      <Modal
+        show={modal}
+        onHide={() => setModal(false)}
+        size='lg'
+        aria-labelledby='contained-modal-title-vcenter'
+        centered
+      >
+        <Modal.Body className='m-2'>
+          <Container>
+            <Row>
+              <Col xs={6} md={4}>
+                Name:
+              </Col>
+              <Col xs={12} md={8}>
+                {name}
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col xs={6} md={4}>
+                Price:
+              </Col>
+              <Col xs={12} md={8}>
+                {price}
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col xs={6} md={4}>
+                Image:
+              </Col>
+              <Col xs={12} md={8}>
+                {previewImage}
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col xs={6} md={4}>
+                Brand:
+              </Col>
+              <Col xs={12} md={8}>
+                {brand}
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col xs={6} md={4}>
+                Count In Stock:
+              </Col>
+              <Col xs={12} md={8}>
+                {countInStock}
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col xs={6} md={4}>
+                Description:
+              </Col>
+              <Col xs={12} md={8}>
+                {description}
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col xs={6} md={4}>
+                Category:
+              </Col>
+              <Col xs={12} md={8}>
+                {category}
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col xs={6} md={4}>
+                Sub-Category:
+              </Col>
+              <Col xs={12} md={8}>
+                {subCategory}
+              </Col>
+            </Row>
+            <hr />
+          </Container>
+          <Center>
+            <h5 className='pb-2'>Are you sure you want to save?</h5>
+          </Center>
+          <Center>
+            <Button
+              className='mx-3'
+              variant='primary'
+              onClick={() => {
+                //toggleEnableDisable(modal.id, modal.disable)
+                submitHandler()
+                setModal(false)
+              }}
+            >
+              Save
+            </Button>
+            <Button
+              className='mx-3'
+              variant='secondary'
+              onClick={() => setModal(false)}
+            >
+              Cancel
+            </Button>
+          </Center>
+        </Modal.Body>
+      </Modal>
     </>
   )
 }

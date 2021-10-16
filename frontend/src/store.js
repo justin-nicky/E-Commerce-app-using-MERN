@@ -19,6 +19,7 @@ import {
   categoryCreateReducer,
   categoryListReducer,
 } from './reducers/categoryReducer'
+import { cartReducer } from './reducers/cartReducer'
 
 const reducer = combineReducers({
   productList: productListReducer,
@@ -33,14 +34,20 @@ const reducer = combineReducers({
   userDisable: userDisableReducer,
   categoryCreate: categoryCreateReducer,
   categoryList: categoryListReducer,
+  cart: cartReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo')
   ? JSON.parse(localStorage.getItem('userInfo'))
   : null
 
+const cartItemsFromStorage = localStorage.getItem('cartItems')
+  ? JSON.parse(localStorage.getItem('cartItems'))
+  : []
+
 const initialState = {
   userLogin: { userInfo: userInfoFromStorage },
+  cart: { cartItems: cartItemsFromStorage },
 }
 const middleware = [thunk]
 
