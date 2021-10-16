@@ -11,7 +11,10 @@ const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body
 
   const user = await User.findOne({ email })
-
+  if (user.isDisabled) {
+    res.status(401)
+    throw new Error('Not Authorized, Blocked User.')
+  }
   if (user) {
     if (!(await user.matchPassword(password))) {
       res.status(401)
@@ -77,6 +80,10 @@ const googleSignInUser = asyncHandler(async (req, res) => {
     const { email, name } = payload
 
     const user = await User.findOne({ email })
+    if (user.isDisabled) {
+      res.status(401)
+      throw new Error('Not Authorized, Blocked User.')
+    }
     if (user) {
       res.status(200)
       res.json({

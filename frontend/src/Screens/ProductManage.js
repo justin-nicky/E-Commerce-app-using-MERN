@@ -81,13 +81,11 @@ const ProductManage = ({ history, match }) => {
           </Button>
         </Col>
       </Row>
-      {loadingDelete && <Loader />}
+      {(loadingDelete || loading || loadingCreate) && <Loader />}
       {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
-      {loadingCreate && <Loader />}
+      {/* {loadingCreate && <Loader />} */}
       {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
-      {loading ? (
-        <Loader />
-      ) : error ? (
+      {error ? (
         <Message variant='danger'>{error}</Message>
       ) : (
         <>
