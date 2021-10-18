@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
-import { addressSchema } from './schemas'
+import { addressSchema } from './schemas.js'
 
 const orderSchema = mongoose.Schema(
   {
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'User',
@@ -37,7 +37,7 @@ const orderSchema = mongoose.Schema(
       building: { type: String, requred: true },
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
-      state: { type: String, required: true },
+      state: { type: String },
       country: { type: String, required: true },
     },
     paymentMethod: {

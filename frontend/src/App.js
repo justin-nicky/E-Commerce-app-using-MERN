@@ -13,6 +13,10 @@ import CategoryManage from './Screens/CategoryManage'
 import OrderManage from './Screens/OrderManage'
 import ProductEditScreen from './Screens/ProductEditScreen'
 import CartScreen from './Screens/CartScreen'
+import ShippingScreen from './Screens/ShippingScreen'
+import PaymentScreen from './Screens/PaymentScreen'
+import PlaceOrderScreen from './Screens/PlaceOrderScreen'
+import OrderScreen from './Screens/OrderScreen'
 
 const App = () => {
   return (
@@ -25,6 +29,10 @@ const App = () => {
           <Route path='/register' component={RegisterScreen} />
           <Route path='/product/:id' component={ProductScreen} />
           <Route path='/cart/:id?' component={CartScreen} />
+          <Route path='/shipping' component={ShippingScreen} />
+          <Route path='/payment' component={PaymentScreen} />
+          <Route path='/placeorder' component={PlaceOrderScreen} />
+          <Route path='/order/:id' component={OrderScreen} />
           <Route path='/admin' component={AdminDashboard} exact />
           <Route path='/admin/manageproducts' component={ProductManage} />
           <Route path='/admin/manageusers' component={UserManage} />
