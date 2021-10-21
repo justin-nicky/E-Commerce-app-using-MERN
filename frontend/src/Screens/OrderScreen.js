@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
+import { Form, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
-import { getOrderDetails } from '../actions/orderActions'
+import { getOrderDetails, updateOrderStatus } from '../actions/orderActions'
 // import { ORDER_CREATE_RESET } from '../constants/orderConstants'
 // import { USER_DETAILS_RESET } from '../constants/userConstants'
+import { ORDER_UPDATE_STATUS_RESET } from '../constants/orderConstants'
 
 const OrderScreen = ({ match }) => {
   const orderId = match.params.id
@@ -15,22 +16,36 @@ const OrderScreen = ({ match }) => {
   const orderDetails = useSelector((state) => state.orderDetails)
   const { order, loading, error } = orderDetails
 
-  if (!loading) {
-    //   Calculate prices
-    const addDecimals = (num) => {
-      return (Math.round(num * 100) / 100).toFixed(2)
-    }
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
 
-    order.itemsPrice = addDecimals(
-      order?.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
-    )
-  }
+  const orderUpdateStatus = useSelector((state) => state.orderUpdateStatus)
+  const {
+    success: updateStatusSuccess,
+    loading: updateStatusLoading,
+    error: updateStatusError,
+  } = orderUpdateStatus
+
+  //if (!loading) {
+  //   Calculate prices
+
+  const itemsPrice = order?.orderItems.reduce(
+    (acc, item) => acc + item.price * item.qty,
+    0
+  )
+
+  // }
 
   useEffect(() => {
-    if (!order || order._id !== orderId) {
+    if (!order || order._id !== orderId || order.status === 'Delivered') {
+      dispatch({ type: ORDER_UPDATE_STATUS_RESET })
       dispatch(getOrderDetails(orderId))
     }
-  }, [order, orderId])
+  }, [dispatch, order, orderId])
+
+  const updateStatusHandler = (status) => {
+    dispatch(updateOrderStatus(order._id, status))
+  }
 
   return loading ? (
     <Loader />
@@ -44,13 +59,11 @@ const OrderScreen = ({ match }) => {
             <ListGroup.Item>
               <h3>Shipping</h3>
               <p>
-                <strong>Name: </strong> {order.userId.name}
+                <strong>Name: </strong> {order.user.name}
               </p>
               <p>
                 <strong>Email: </strong>{' '}
-                <a href={`mailto:${order.userId.email}`}>
-                  {order.userId.email}
-                </a>
+                <a href={`mailto:${order.user.email}`}>{order.user.email}</a>
               </p>
               <p>
                 <strong>Address:</strong>
@@ -112,12 +125,12 @@ const OrderScreen = ({ match }) => {
           <Card>
             <ListGroup variant='flush'>
               <ListGroup.Item>
-                <h>Order Summary</h>
+                <h4>Order Summary</h4>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>₹{order.itemsPrice >> 0}</Col>
+                  <Col>₹{itemsPrice >> 0}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
@@ -134,10 +147,33 @@ const OrderScreen = ({ match }) => {
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
-                  <Col>Total</Col>
-                  <Col>₹{order.totalPrice >> 0}</Col>
+                  <Col>
+                    <strong>Total</strong>
+                  </Col>
+                  <Col>
+                    <strong>₹{order.totalPrice >> 0}</strong>
+                  </Col>
                 </Row>
               </ListGroup.Item>
+
+              {userInfo &&
+                userInfo.isAdmin &&
+                order.status !== ('Delivered' || 'Cancelled') && (
+                  <Form.Control
+                    className='shadow-sm btn btn-primary '
+                    as='select'
+                    value={order.status}
+                    onChange={(e) => {
+                      updateStatusHandler(e.target.value)
+                    }}
+                  >
+                    {['Placed', 'Shipped', 'Delivered'].map((state) => (
+                      <option key={state} value={state}>
+                        {state}
+                      </option>
+                    ))}
+                  </Form.Control>
+                )}
             </ListGroup>
           </Card>
         </Col>

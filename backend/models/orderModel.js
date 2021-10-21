@@ -3,7 +3,7 @@ import { addressSchema } from './schemas.js'
 
 const orderSchema = mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'User',
@@ -76,7 +76,8 @@ const orderSchema = mongoose.Schema(
     status: {
       type: String,
       required: true,
-      default: 'Order Confirmed',
+      default: 'Placed',
+      enum: ['Placed', 'Cancelled', 'Delivered', 'Shipped'],
     },
     deliverdAt: {
       type: Date,

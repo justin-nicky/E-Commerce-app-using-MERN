@@ -14,6 +14,8 @@ import {
   userGoogleSignInReducer,
   userListReducer,
   userDisableReducer,
+  userDetailsReducer,
+  userUpdateProfileReducer,
 } from './reducers/userReducer'
 import {
   categoryCreateReducer,
@@ -23,6 +25,9 @@ import { cartReducer } from './reducers/cartReducer'
 import {
   orderCreateReducer,
   orderDetailsReducer,
+  orderListProfileReducer,
+  orderListReducer,
+  orderUpdateStatusReducer,
 } from './reducers/orderReducers'
 
 const reducer = combineReducers({
@@ -34,13 +39,18 @@ const reducer = combineReducers({
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userGoogleSignIn: userGoogleSignInReducer,
+  userDetails: userDetailsReducer,
   userList: userListReducer,
   userDisable: userDisableReducer,
+  userUpdateProfile: userUpdateProfileReducer,
   categoryCreate: categoryCreateReducer,
   categoryList: categoryListReducer,
   cart: cartReducer,
   orderCreate: orderCreateReducer,
   orderDetails: orderDetailsReducer,
+  orderListProfile: orderListProfileReducer,
+  orderList: orderListReducer,
+  orderUpdateStatus: orderUpdateStatusReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo')
@@ -54,8 +64,6 @@ const cartItemsFromStorage = localStorage.getItem('cartItems')
 const shippingAddressFromStorage = localStorage.getItem('cartShippingAddress')
   ? JSON.parse(localStorage.getItem('cartShippingAddress'))
   : {}
-
-console.log('store init shipping address -', shippingAddressFromStorage)
 
 const initialState = {
   userLogin: { userInfo: userInfoFromStorage },
