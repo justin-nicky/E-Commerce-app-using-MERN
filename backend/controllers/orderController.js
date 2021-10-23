@@ -22,7 +22,7 @@ export const addOrderItems = asyncHandler(async (req, res) => {
   } else {
     const order = new Order({
       orderItems,
-      userId: req.user._id,
+      user: req.user._id,
       shippingAddress,
       paymentMethod,
       itemsPrice,
@@ -53,7 +53,7 @@ export const getOrderById = asyncHandler(async (req, res) => {
 })
 
 // @desc   Update order to paid
-// @route  GET /api/orders/:id/pay
+// @route  PUT /api/orders/:id/pay
 // @access Private
 export const updateOrderToPaid = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id)
@@ -72,11 +72,8 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
 // @route  PUT /api/orders/:id/status
 // @access Private/Admin
 export const updateOrderStatus = asyncHandler(async (req, res) => {
-  console.log(req.body.status)
   const order = await Order.findById(req.params.id)
   if (order) {
-    console.log('condition inside update status')
-
     if (req.body.status === 'Delivered') {
       order.isPaid = true
       order.deliveredAt = Date.now()

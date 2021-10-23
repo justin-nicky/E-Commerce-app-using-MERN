@@ -48,7 +48,6 @@ const PaymentScreen = ({ history }) => {
               id='Credit/Debit Card'
               name='paymentMethod'
               value='card'
-              disabled
               onChange={(e) => setPaymentMethod(e.target.value)}
             ></Form.Check>
             <Form.Check
