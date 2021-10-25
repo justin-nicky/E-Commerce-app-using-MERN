@@ -6,6 +6,7 @@ import Message from '../Components/Message'
 import Loader from '../Components/Loader'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
 import { listMyOrders } from '../actions/orderActions'
+import { fileUploadAndResize } from '../helpers/FileUpload'
 //import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 
 const ProfileScreen = ({ location, history }) => {
@@ -14,7 +15,8 @@ const ProfileScreen = ({ location, history }) => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [message, setMessage] = useState(null)
-  const [profileImage, setProfileImage] = useState('')
+  const [profileImage, setProfileImage] = useState('user2.png')
+  const [profileImageLoading, setProfileImageLoading] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -41,6 +43,7 @@ const ProfileScreen = ({ location, history }) => {
       if (
         !user ||
         !user.name
+        //||user.profileImage === ''
         //|| success
       ) {
         // dispatch({ type: USER_UPDATE_PROFILE_RESET })
@@ -49,6 +52,9 @@ const ProfileScreen = ({ location, history }) => {
       } else {
         setName(user.name)
         setEmail(user.email)
+        if (user.profileImage !== '') {
+          setProfileImage(user.profileImage)
+        }
       }
     }
   }, [
@@ -70,28 +76,37 @@ const ProfileScreen = ({ location, history }) => {
     }
   }
 
-  // const uploadImageHandler = async (e) => {
-  //   const file = e.target.files[0]
-  //   const formData = new FormData()
-  //   formData.append('image', file)
-  //   //setUploading(true)
+  const uploadImageHandler = async (e) => {
+    try {
+      setProfileImageLoading(true)
+      const url = await fileUploadAndResize(e)
+      setProfileImage(url)
+      setProfileImageLoading(false)
+    } catch (error) {
+      console.log(error)
+    }
 
-  //   try {
-  //     const config = {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     }
+    //   const file = e.target.files[0]
+    //   const formData = new FormData()
+    //   formData.append('image', file)
+    //   //setUploading(true)
 
-  //     const { data } = await axios.post('/api/upload', formData, config)
+    //   try {
+    //     const config = {
+    //       headers: {
+    //         'Content-Type': 'multipart/form-data',
+    //       },
+    //     }
 
-  //     setPreviewImage(data)
-  //     //setUploading(false)
-  //   } catch (error) {
-  //     console.error(error)
-  //     //setUploading(false)
-  //   }
-  // }
+    //     const { data } = await axios.post('/api/upload', formData, config)
+
+    //     setPreviewImage(data)
+    //     //setUploading(false)
+    //   } catch (error) {
+    //     console.error(error)
+    //     //setUploading(false)
+    //   }
+  }
 
   return (
     <Row>
@@ -105,19 +120,34 @@ const ProfileScreen = ({ location, history }) => {
           <Message variant='danger'>{error}</Message>
         ) : (
           <Form onSubmit={submitHandler}>
-            <Image src='' alt='image' rounded fluid />
             <Form.Group
-              controlId='formFile'
               className='mb-3 fluid'
               onInput={(e) => {
-                //uploadImageHandler(e)
+                uploadImageHandler(e)
               }}
               style={{
                 cursor: 'pointer',
-                //opacity: '0'
               }}
             >
-              <Form.Control type='file' accept='image/*' />
+              <Form.Control
+                type='file'
+                accept='image/*'
+                id='imageInput'
+                hidden
+              />
+              {profileImageLoading ? (
+                <Loader />
+              ) : (
+                <Image
+                  src={profileImage}
+                  alt='image'
+                  rounded
+                  fluid
+                  onClick={() => {
+                    document.getElementById('imageInput').click()
+                  }}
+                />
+              )}
             </Form.Group>
 
             <Form.Group controlId='name'>

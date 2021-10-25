@@ -26,6 +26,7 @@ const authUser = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      profileImage: user.profileImage,
       token: generateToken(user._id),
     })
   } else {
@@ -91,6 +92,7 @@ const googleSignInUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        profileImage: user.profileImage,
         token: generateToken(user._id),
       })
     } else {
@@ -104,6 +106,7 @@ const googleSignInUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         isAdmin: user.isAdmin,
+        profileImage: user.profileImage,
         token: generateToken(user._id),
       })
     }
@@ -124,6 +127,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      profileImage: user.profileImage,
     })
   }
 })
