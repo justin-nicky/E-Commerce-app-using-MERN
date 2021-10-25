@@ -7,6 +7,7 @@ import {
   ListGroup,
   ListGroupItem,
   Row,
+  Carousel,
 } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -20,12 +21,27 @@ const ProductScreen = ({ match, history }) => {
 
   const [qty, setQty] = useState(1)
 
+  const [subImage1, setsubImage1] = useState(null)
+  const [subImage2, setsubImage2] = useState(null)
+
   const productDetails = useSelector((state) => state.productDetails)
   const { loading, product, error } = productDetails
 
+  //setImages(product.images)
+
   useEffect(() => {
-    dispatch(listProductDetails(match.params.id))
-  }, [match, dispatch])
+    if (!product || !product.name) {
+      dispatch(listProductDetails(match.params.id))
+    }
+    if (product && product.images) {
+      if (product.images.length >= 1) {
+        setsubImage1(product.images[0])
+      }
+      if (product.images.length >= 2) {
+        setsubImage2(product.images[1])
+      }
+    }
+  }, [match, dispatch, product])
 
   const addToCartHandler = () => {
     history.push(`/cart/${match.params.id}?qty=${qty}`)
@@ -44,7 +60,21 @@ const ProductScreen = ({ match, history }) => {
           </Link>
           <Row>
             <Col md={5}>
-              <Image src={product.previewImage} alt={product.name} fluid />
+              <Carousel>
+                {subImage1 && (
+                  <Carousel.Item>
+                    <Image src={subImage1} alt={product.name} fluid />
+                  </Carousel.Item>
+                )}
+                <Carousel.Item>
+                  <Image src={product.previewImage} alt={product.name} fluid />
+                </Carousel.Item>
+                {subImage2 && (
+                  <Carousel.Item>
+                    <Image src={subImage2} alt={product.name} fluid />
+                  </Carousel.Item>
+                )}
+              </Carousel>
             </Col>
 
             <Col md={4}>

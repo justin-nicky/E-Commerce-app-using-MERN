@@ -1,7 +1,15 @@
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Form, Button, Container, Modal, Row, Col } from 'react-bootstrap'
+import {
+  Form,
+  Button,
+  Container,
+  Modal,
+  Row,
+  Col,
+  Image,
+} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
@@ -10,20 +18,25 @@ import Center from '../Components/Center'
 import { listProductDetails, updateProduct } from '../actions/productActions'
 import { listCategories } from '../actions/categoryActions'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
+import { fileUploadAndResize } from '../helpers/FileUpload'
 
 const ProductEditScreen = ({ match, history }) => {
   const productId = match.params.id
 
   const [name, setName] = useState('')
   const [price, setPrice] = useState(0)
-  const [previewImage, setPreviewImage] = useState('')
+  const [previewImage, setPreviewImage] = useState('/imageplaceholder.png')
+  const [subImage1, setSubImage1] = useState('/imageplaceholder.png')
+  const [subImage2, setSubImage2] = useState('/imageplaceholder.png')
+  const [previewImageLoading, setPreviewImageLoading] = useState(false)
+  const [sub1Loading, setSub1Loading] = useState(false)
+  const [sub2Loading, setSub2Loading] = useState(false)
   const [brand, setBrand] = useState('')
   const [category, setCategory] = useState('')
   const [subCategory, setSubCategory] = useState('')
   const [countInStock, setCountInStock] = useState(0)
   const [description, setDescription] = useState('')
   const [uploading, setUploading] = useState(false)
-  //const [subShow, setSubShow] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState([])
   const [modal, setModal] = useState(false)
 
@@ -60,17 +73,27 @@ const ProductEditScreen = ({ match, history }) => {
       history.push('/admin/manageproducts')
     }
     //else {
-    if (!product.name || product._id !== productId) {
+    if (!product || !product.name || product._id !== productId) {
       dispatch(listProductDetails(productId))
     } else {
       setName(product.name)
       setPrice(product.price)
-      setPreviewImage(product.previewImage)
+      if (product.previewImage !== '') {
+        setPreviewImage(product.previewImage)
+      }
       setBrand(product.brand)
       setCategory(product.category)
       setSubCategory(product.subCategory)
       setCountInStock(product.countInStock)
       setDescription(product.description)
+      if (product.images) {
+        if (product.images.length >= 1) {
+          setSubImage1(product.images[0])
+        }
+        if (product.images.length >= 2) {
+          setSubImage2(product.images[1])
+        }
+      }
     }
     //}
   }, [dispatch, history, productId, product, successUpdate, userInfo])
@@ -105,7 +128,7 @@ const ProductEditScreen = ({ match, history }) => {
         name,
         price,
         previewImage,
-        images: [],
+        images: [subImage1, subImage2],
         subCategory,
         brand,
         category,
@@ -115,6 +138,17 @@ const ProductEditScreen = ({ match, history }) => {
     )
   }
 
+  const uploadImageHandler = async (e, setImage, setLoading) => {
+    try {
+      setLoading(true)
+      const url = await fileUploadAndResize(e)
+      setImage(url)
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+    }
+  }
   const categorySelectHandler = (e) => {
     setCategory(e.target.value)
     let category = categories.filter(
@@ -163,22 +197,103 @@ const ProductEditScreen = ({ match, history }) => {
             </Form.Group>
 
             <Form.Group controlId='image'>
-              <Form.Label>Image</Form.Label>
-              <Form.Control
-                type='text'
-                placeholder='Enter image url'
-                value={previewImage}
-                onChange={(e) => setPreviewImage(e.target.value)}
-              ></Form.Control>
-              <Form.File
-                className='custom-file-input'
-                id='image-file'
-                custom
-                accept='image/*'
-                onChange={uploadFileHandler}
-              ></Form.File>
-
-              {uploading && <Loader />}
+              <Form.Label>Images</Form.Label>
+              <Row>
+                <Col md={4}>
+                  <Form.Group
+                    className='mb-3 fluid'
+                    onInput={(e) => {
+                      uploadImageHandler(e, setSubImage1, setSub1Loading)
+                    }}
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Form.Control
+                      type='file'
+                      accept='image/*'
+                      id='imageInput1'
+                      hidden
+                    />
+                    {sub1Loading ? (
+                      <Loader />
+                    ) : (
+                      <Image
+                        src={subImage1}
+                        alt='image'
+                        fluid
+                        onClick={() => {
+                          document.getElementById('imageInput1').click()
+                        }}
+                      />
+                    )}
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group
+                    className='mb-3 fluid'
+                    onInput={(e) => {
+                      uploadImageHandler(
+                        e,
+                        setPreviewImage,
+                        setPreviewImageLoading
+                      )
+                    }}
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Form.Control
+                      type='file'
+                      accept='image/*'
+                      id='imageInput2'
+                      hidden
+                    />
+                    {previewImageLoading ? (
+                      <Loader />
+                    ) : (
+                      <Image
+                        src={previewImage}
+                        alt='image'
+                        fluid
+                        onClick={() => {
+                          document.getElementById('imageInput2').click()
+                        }}
+                      />
+                    )}
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group
+                    className='mb-3 fluid'
+                    onInput={(e) => {
+                      uploadImageHandler(e, setSubImage2, setSub2Loading)
+                    }}
+                    style={{
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Form.Control
+                      type='file'
+                      accept='image/*'
+                      id='imageInput3'
+                      hidden
+                    />
+                    {sub2Loading ? (
+                      <Loader />
+                    ) : (
+                      <Image
+                        src={subImage2}
+                        alt='image'
+                        fluid
+                        onClick={() => {
+                          document.getElementById('imageInput3').click()
+                        }}
+                      />
+                    )}
+                  </Form.Group>
+                </Col>
+              </Row>
             </Form.Group>
 
             <Form.Group controlId='brand'>
@@ -293,7 +408,17 @@ const ProductEditScreen = ({ match, history }) => {
               <Col xs={6} md={4}>
                 Image:
               </Col>
-              <Col xs={12} md={8}>
+              <Col
+                xs={12}
+                md={8}
+                style={{
+                  display: 'inline-block',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '50ch',
+                }}
+              >
                 {previewImage}
               </Col>
             </Row>
@@ -320,7 +445,17 @@ const ProductEditScreen = ({ match, history }) => {
               <Col xs={6} md={4}>
                 Description:
               </Col>
-              <Col xs={12} md={8}>
+              <Col
+                xs={12}
+                md={8}
+                style={{
+                  display: 'inline-block',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '50ch',
+                }}
+              >
                 {description}
               </Col>
             </Row>
@@ -372,5 +507,4 @@ const ProductEditScreen = ({ match, history }) => {
     </>
   )
 }
-
 export default ProductEditScreen

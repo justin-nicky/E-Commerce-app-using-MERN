@@ -84,6 +84,7 @@ const ProfileScreen = ({ location, history }) => {
       setProfileImageLoading(false)
     } catch (error) {
       console.log(error)
+      setProfileImage(false)
     }
 
     //   const file = e.target.files[0]

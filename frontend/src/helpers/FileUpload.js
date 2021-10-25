@@ -23,7 +23,7 @@ export const fileUploadAndResize = (e) => {
         1280,
         720,
         'JPEG',
-        100,
+        65,
         0,
         (uri) => {
           axios
