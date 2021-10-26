@@ -15,6 +15,7 @@ import Rating from '../Components/Rating'
 import { listProductDetails } from '../actions/productActions'
 import Loader from '../Components/Loader'
 import Message from '../Components/Message'
+import { GlassMagnifier } from 'react-image-magnifiers'
 
 const ProductScreen = ({ match, history }) => {
   const dispatch = useDispatch()
@@ -63,15 +64,35 @@ const ProductScreen = ({ match, history }) => {
               <Carousel>
                 {subImage1 && (
                   <Carousel.Item>
-                    <Image src={subImage1} alt={product.name} fluid />
+                    <GlassMagnifier
+                      imageSrc={subImage1}
+                      imageAlt={product.name}
+                      magnifierBorderSize={1}
+                      magnifierSize={'50%'}
+                      square={true}
+                    />
                   </Carousel.Item>
                 )}
                 <Carousel.Item>
-                  <Image src={product.previewImage} alt={product.name} fluid />
+                  <GlassMagnifier
+                    imageSrc={product.previewImage}
+                    imageAlt={product.name}
+                    magnifierBorderSize={1}
+                    magnifierSize={'50%'}
+                    square={true}
+                  />
+
+                  {/* <Image src={product.previewImage} alt={product.name} fluid /> */}
                 </Carousel.Item>
                 {subImage2 && (
                   <Carousel.Item>
-                    <Image src={subImage2} alt={product.name} fluid />
+                    <GlassMagnifier
+                      imageSrc={subImage2}
+                      imageAlt={product.name}
+                      magnifierBorderSize={1}
+                      magnifierSize={'50%'}
+                      square={true}
+                    />
                   </Carousel.Item>
                 )}
               </Carousel>
