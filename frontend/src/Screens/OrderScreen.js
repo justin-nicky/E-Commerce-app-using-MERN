@@ -2,18 +2,32 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { PayPalButton } from 'react-paypal-button-v2'
 import { Link } from 'react-router-dom'
-import { Row, Col, ListGroup, Image, Card, Button, Form } from 'react-bootstrap'
+import {
+  Row,
+  Col,
+  ListGroup,
+  Image,
+  Card,
+  Button,
+  Form,
+  Modal,
+} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
 import { fileUploadAndResize } from '../helpers/FileUpload'
+import Center from '../Components/Center'
 import {
+  cancelOrder,
   getOrderDetails,
   payOrder,
+  updateOrderStatus,
   //deliverOrder,
 } from '../actions/orderActions'
 import {
+  ORDER_CANCEL_RESET,
   ORDER_PAY_RESET,
+  ORDER_UPDATE_STATUS_RESET,
   //ORDER_DELIVER_RESET,
 } from '../constants/orderConstants'
 
@@ -21,6 +35,8 @@ const OrderScreen = ({ match, history }) => {
   const orderId = match.params.id
 
   const [sdkReady, setSdkReady] = useState(false)
+
+  const [modal, setModal] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -30,8 +46,11 @@ const OrderScreen = ({ match, history }) => {
   const orderPay = useSelector((state) => state.orderPay)
   const { loading: loadingPay, success: successPay } = orderPay
 
-  // const orderDeliver = useSelector((state) => state.orderDeliver)
-  // const { loading: loadingDeliver, success: successDeliver } = orderDeliver
+  const orderUpdateStatus = useSelector((state) => state.orderUpdateStatus)
+  const { loading: loadingStatus, success: successStatus } = orderUpdateStatus
+
+  const orderCancel = useSelector((state) => state.orderCancel)
+  const { loading: loadingCancel, success: successCancel } = orderCancel
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
@@ -68,11 +87,13 @@ const OrderScreen = ({ match, history }) => {
     if (
       !order ||
       successPay ||
-      // || successDeliver
+      successStatus ||
+      successCancel ||
       order._id !== orderId
     ) {
       dispatch({ type: ORDER_PAY_RESET })
-      //dispatch({ type: ORDER_DELIVER_RESET })
+      dispatch({ type: ORDER_UPDATE_STATUS_RESET })
+      dispatch({ type: ORDER_CANCEL_RESET })
       dispatch(getOrderDetails(orderId))
     } else if (!order.isPaid) {
       if (!window.paypal) {
@@ -81,13 +102,7 @@ const OrderScreen = ({ match, history }) => {
         setSdkReady(true)
       }
     }
-  }, [
-    dispatch,
-    orderId,
-    successPay,
-    //successDeliver,
-    order,
-  ])
+  }, [dispatch, orderId, successPay, successStatus, successCancel, order])
 
   const successPaymentHandler = (paymentResult) => {
     console.log(paymentResult)
@@ -96,6 +111,16 @@ const OrderScreen = ({ match, history }) => {
 
   const deliverHandler = () => {
     //dispatch(deliverOrder(order))
+  }
+
+  const updateStatusHandler = (status) => {
+    dispatch(updateOrderStatus(order._id, status))
+    //dispatch(getOrderDetails(orderId))
+  }
+
+  const cancelOrderHandler = () => {
+    dispatch(cancelOrder(order._id))
+    //dispatch(getOrderDetails(orderId))
   }
 
   return loading ? (
@@ -134,7 +159,7 @@ const OrderScreen = ({ match, history }) => {
                 {order.paymentMethod}
               </p>
               {order.isPaid ? (
-                <Message variant='success'>Paid on {order.paidAt}</Message>
+                <Message variant='success'>Paid</Message>
               ) : (
                 <Message variant='danger'>Not Paid</Message>
               )}
@@ -220,25 +245,71 @@ const OrderScreen = ({ match, history }) => {
                   )}
                 </ListGroup.Item>
               )}
+              {['Shipped', 'Placed'].includes(order.status) &&
+                userInfo &&
+                !userInfo.isAdmin && (
+                  <ListGroup.Item>
+                    <Button onClick={() => setModal(true)}>Cancel</Button>
+                  </ListGroup.Item>
+                )}
               {/* {loadingDeliver && <Loader />} */}
               {userInfo &&
                 userInfo.isAdmin &&
                 order.isPaid &&
                 !order.isDelivered && (
                   <ListGroup.Item>
-                    <Button
-                      type='button'
-                      className='btn btn-block'
-                      onClick={deliverHandler}
+                    <Form.Control
+                      className='shadow-sm btn btn-primary '
+                      as='select'
+                      value={order.status}
+                      onChange={(e) => {
+                        updateStatusHandler(e.target.value)
+                      }}
                     >
-                      Mark As Delivered
-                    </Button>
+                      {['Placed', 'Shipped', 'Delivered'].map((state) => (
+                        <option key={state} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </Form.Control>
                   </ListGroup.Item>
                 )}
             </ListGroup>
           </Card>
         </Col>
       </Row>
+
+      <Modal
+        show={modal}
+        onHide={() => setModal(false)}
+        size='sm'
+        aria-labelledby='contained-modal-title-vcenter'
+        centered
+      >
+        <Modal.Body className='m-2'>
+          <h5>Are you sure you want to Cancel?</h5>
+
+          <Center>
+            <Button
+              className='mx-3'
+              variant='danger'
+              onClick={() => {
+                cancelOrderHandler()
+                setModal(false)
+              }}
+            >
+              Yes
+            </Button>
+            <Button
+              className='mx-3'
+              variant='secondary'
+              onClick={() => setModal(false)}
+            >
+              Cancel
+            </Button>
+          </Center>
+        </Modal.Body>
+      </Modal>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import asyncHandler from 'express-async-handler'
+import Razorpay from 'razorpay'
 import Order from '../models/orderModel.js'
 
 // @desc   Create a new order
@@ -78,8 +79,24 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
       order.isPaid = true
       order.deliveredAt = Date.now()
     }
+    order.status = req.body.status
     const updatedOrder = await order.save()
-    //res.json(updatedOrder)
+    res.json(updatedOrder)
+  } else {
+    res.status(404)
+    throw new Error('Order not found.')
+  }
+})
+
+// @desc   Cancel order
+// @route  PUT /api/orders/:id/cancel
+// @access Private/
+export const cancelOrder = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id)
+  if (order) {
+    order.status = 'Cancelled'
+    const updatedOrder = await order.save()
+    res.json(updatedOrder)
   } else {
     res.status(404)
     throw new Error('Order not found.')
@@ -102,4 +119,27 @@ export const getOrders = asyncHandler(async (req, res) => {
     .sort('-createdAt')
     .populate('user', 'id name')
   res.json(orders)
+})
+
+router.post('/orders', async (req, res) => {
+  try {
+    const instance = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_SECRET,
+    })
+
+    const options = {
+      amount: 50000, // amount in smallest currency unit
+      currency: 'INR',
+      receipt: 'receipt_order_74394',
+    }
+
+    const order = await instance.orders.create(options)
+
+    if (!order) return res.status(500).send('Some error occured')
+
+    res.json(order)
+  } catch (error) {
+    res.status(500).send(error)
+  }
 })

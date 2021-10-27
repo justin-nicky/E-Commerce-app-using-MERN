@@ -23,6 +23,7 @@ import {
 } from './reducers/categoryReducer'
 import { cartReducer } from './reducers/cartReducer'
 import {
+  orderCancelReducer,
   orderCreateReducer,
   orderDetailsReducer,
   orderListProfileReducer,
@@ -53,6 +54,7 @@ const reducer = combineReducers({
   orderList: orderListReducer,
   orderUpdateStatus: orderUpdateStatusReducer,
   orderPay: orderPayReducer,
+  orderCancel: orderCancelReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo')

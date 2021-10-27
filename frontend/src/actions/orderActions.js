@@ -164,6 +164,7 @@ export const listAllOrders = () => async (dispatch, getState) => {
 }
 
 export const updateOrderStatus = (id, status) => async (dispatch, getState) => {
+  console.log('updateOrderStatus')
   try {
     dispatch({ type: ORDER_UPDATE_STATUS_REQUEST })
 
@@ -177,7 +178,43 @@ export const updateOrderStatus = (id, status) => async (dispatch, getState) => {
         'Content-Type': 'application/json',
       },
     }
-    await axios.put(`/api/orders/${id}/status`, status, config)
+    console.log(config)
+    const { data } = await axios.put(
+      `/api/orders/${id}/status`,
+      {
+        status,
+      },
+      config
+    )
+    dispatch({ type: ORDER_UPDATE_STATUS_SUCCESS })
+  } catch (error) {
+    dispatch({
+      type: ORDER_UPDATE_STATUS_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    })
+  }
+}
+
+export const cancelOrder = (id) => async (dispatch, getState) => {
+  console.log('updateOrderStatus')
+  try {
+    dispatch({ type: ORDER_UPDATE_STATUS_REQUEST })
+
+    const {
+      userLogin: { userInfo },
+    } = getState()
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+    console.log(config)
+    await axios.put(`/api/orders/${id}/cancel`, {}, config)
     dispatch({ type: ORDER_UPDATE_STATUS_SUCCESS })
   } catch (error) {
     dispatch({
