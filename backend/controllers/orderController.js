@@ -1,6 +1,9 @@
 import asyncHandler from 'express-async-handler'
 import Razorpay from 'razorpay'
+import dotenv from 'dotenv'
 import Order from '../models/orderModel.js'
+
+dotenv.config()
 
 // @desc   Create a new order
 // @route  POST /api/orders
@@ -121,7 +124,8 @@ export const getOrders = asyncHandler(async (req, res) => {
   res.json(orders)
 })
 
-router.post('/orders', async (req, res) => {
+export const razorpayOrder = asyncHandler(async (req, res) => {
+  const amount = Math.floor(req.body.order.totalPrice)
   try {
     const instance = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
@@ -129,9 +133,9 @@ router.post('/orders', async (req, res) => {
     })
 
     const options = {
-      amount: 50000, // amount in smallest currency unit
+      amount: String(amount) + '00',
       currency: 'INR',
-      receipt: 'receipt_order_74394',
+      receipt: Date.now(),
     }
 
     const order = await instance.orders.create(options)

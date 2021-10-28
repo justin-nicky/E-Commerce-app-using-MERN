@@ -84,6 +84,19 @@ const OrderScreen = ({ match, history }) => {
       document.body.appendChild(script)
     }
 
+    const addRazorpayScript = () => {
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      // script.onload = () => {
+      //   resolve(true)
+      // }
+      // script.onerror = () => {
+      //   resolve(false)
+      // }
+      document.body.appendChild(script)
+    }
+    addRazorpayScript()
+
     if (
       !order ||
       successPay ||
@@ -103,6 +116,58 @@ const OrderScreen = ({ match, history }) => {
       }
     }
   }, [dispatch, orderId, successPay, successStatus, successCancel, order])
+
+  const displayRazorpay = async () => {
+    // creating a new order
+    const config = { headers: { Authorization: `Bearer ${userInfo.token}` } }
+    const result = await axios.post(
+      `/api/orders/${orderId}/razorpay`,
+      { order },
+      config
+    )
+
+    if (!result) {
+      alert('Server error. Are you online?')
+      return
+    }
+
+    // Getting the order details back
+    const { amount, id: order_id, currency } = result.data
+
+    const options = {
+      key: 'rzp_test_WIdTNldcetMJDu',
+      amount: amount.toString(),
+      currency: currency,
+      name: 'Proshop',
+      description: 'Gadget Store',
+      //image: { logo },
+      order_id: order_id,
+      handler: async function (response) {
+        const data = {
+          orderCreationId: order_id,
+          razorpayPaymentId: response.razorpay_payment_id,
+          razorpayOrderId: response.razorpay_order_id,
+          razorpaySignature: response.razorpay_signature,
+        }
+
+        dispatch(payOrder(orderId, data))
+      },
+      prefill: {
+        name: 'Justin',
+        email: 'justin@example.com',
+        contact: '9999999999',
+      },
+      notes: {
+        address: 'Crossroads, Carnival Infopark, Kochi',
+      },
+      theme: {
+        color: '#61dafb',
+      },
+    }
+
+    const paymentObject = new window.Razorpay(options)
+    paymentObject.open()
+  }
 
   const successPaymentHandler = (paymentResult) => {
     console.log(paymentResult)
@@ -188,7 +253,7 @@ const OrderScreen = ({ match, history }) => {
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x ${item.price} = ${item.qty * item.price}
+                          {item.qty} x ₹{item.price} = ₹{item.qty * item.price}
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -232,7 +297,7 @@ const OrderScreen = ({ match, history }) => {
                   </Col>
                 </Row>
               </ListGroup.Item>
-              {!order.isPaid && order.paymentMethod !== 'COD' && (
+              {!order.isPaid && order.paymentMethod === 'card' && (
                 <ListGroup.Item>
                   {loadingPay && <Loader />}
                   {!sdkReady ? (
@@ -243,6 +308,13 @@ const OrderScreen = ({ match, history }) => {
                       onSuccess={successPaymentHandler}
                     />
                   )}
+                </ListGroup.Item>
+              )}
+              {!order.isPaid && order.paymentMethod === 'UPI' && (
+                <ListGroup.Item>
+                  <Button className='App-link' onClick={displayRazorpay}>
+                    Pay ₹{Math.floor(order.totalPrice)}
+                  </Button>
                 </ListGroup.Item>
               )}
               {['Shipped', 'Placed'].includes(order.status) &&

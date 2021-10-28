@@ -44,7 +44,7 @@ const PaymentScreen = ({ history }) => {
             ></Form.Check>
             <Form.Check
               type='radio'
-              label='Credit/Debit Card'
+              label='Credit/Debit Card (PayPal)'
               id='Credit/Debit Card'
               name='paymentMethod'
               value='card'
@@ -52,11 +52,10 @@ const PaymentScreen = ({ history }) => {
             ></Form.Check>
             <Form.Check
               type='radio'
-              label='UPI'
+              label='UPI/Card (Razorpay)'
               id='UPI'
               name='paymentMethod'
               value='UPI'
-              disabled
               onChange={(e) => setPaymentMethod(e.target.value)}
             ></Form.Check>
           </Col>
