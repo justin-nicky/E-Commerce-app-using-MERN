@@ -31,6 +31,7 @@ import {
   orderPayReducer,
   orderUpdateStatusReducer,
 } from './reducers/orderReducers'
+import { dashboardPopulateReducer } from './reducers/dashboardReducer'
 
 const reducer = combineReducers({
   productList: productListReducer,
@@ -55,6 +56,7 @@ const reducer = combineReducers({
   orderUpdateStatus: orderUpdateStatusReducer,
   orderPay: orderPayReducer,
   orderCancel: orderCancelReducer,
+  dashboardPopulate: dashboardPopulateReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo')

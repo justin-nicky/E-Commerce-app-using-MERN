@@ -1,5 +1,6 @@
 main {
   min-height: 80vh;
+  margin-top: 50px;
 }
 #card-name {
   display: -webkit-box;
@@ -7,4 +8,10 @@ main {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.sidebar {
+  height: 100%;
+  width: 10%;
+  background-color: aqua;
 }
