@@ -4,6 +4,8 @@
   "private": true,
   "proxy": "http://127.0.0.1:5000",
   "dependencies": {
+    "@david.kucsai/react-pdf-table": "^0.3.0",
+    "@react-pdf/renderer": "^2.0.20",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
@@ -11,6 +13,7 @@
     "dotenv": "^8.2.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.4",
+    "react-chartjs-2": "^3.3.0",
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
     "react-image-file-resizer": "^0.4.7",

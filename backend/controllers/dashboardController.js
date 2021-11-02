@@ -48,12 +48,45 @@ export const getDashboardData = asyncHandler(async (req, res) => {
       $project: { _id: 0, paymentMethod: '$_id', count: 1 },
     },
   ])
+  const ordersOfLastWeek = await Order.aggregate([
+    {
+      $match: {
+        status: { $ne: 'Cancelled' },
+        createdAt: {
+          $gte: new Date(new Date() - 7 * 60 * 60 * 24 * 1000),
+        },
+      },
+    },
+  ])
+  const ordersOfLastMonth = await Order.aggregate([
+    {
+      $match: {
+        status: { $ne: 'Cancelled' },
+        createdAt: {
+          $gte: new Date(new Date() - 30 * 60 * 60 * 24 * 1000),
+        },
+      },
+    },
+  ])
+  const ordersOfLastYear = await Order.aggregate([
+    {
+      $match: {
+        status: { $ne: 'Cancelled' },
+        createdAt: {
+          $gte: new Date(new Date() - 365 * 60 * 60 * 24 * 1000),
+        },
+      },
+    },
+  ])
   let data = await Promise.all([
     totalSalesAndOrderCount,
     productCount,
     userCount,
     salesOfLastWeek,
     paymentMethods,
+    ordersOfLastWeek,
+    ordersOfLastMonth,
+    ordersOfLastYear,
   ])
   const thisDay = dayOfYear(new Date())
   let salesOfLastWeekData = []
@@ -73,5 +106,37 @@ export const getDashboardData = asyncHandler(async (req, res) => {
     userCount: data[2],
     salesOfLastWeek: salesOfLastWeekData,
     paymentMethods: data[4],
+    ordersOfLastWeek: data[5],
+    ordersOfLastMonth: data[6],
+    ordersOfLastYear: data[7],
   })
 })
+
+// // @desc   Fetch dashboard data
+// // @route  GET /api/salesreport/:type
+// // @access Private/Admin
+// export const getSalesReport = asyncHandler(async (req, res) => {
+//   const { type } = req.params
+//   const days =
+//     type === 'weekly'
+//       ? 7
+//       : type === 'monthly'
+//       ? 30
+//       : type === 'yearly'
+//       ? 365
+//       : 0
+//   if (days === 0) {
+//     throw new Error('Invalid type')
+//   }
+//   const salesData = await Order.aggregate([
+//     {
+//       $match: {
+//         status: { $ne: 'Cancelled' },
+//         createdAt: {
+//           $gte: new Date(new Date() - days * 60 * 60 * 24 * 1000),
+//         },
+//       },
+//     },
+//   ])
+//   res.json(salesData)
+// })

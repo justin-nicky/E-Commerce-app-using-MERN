@@ -38,6 +38,8 @@ const OrderScreen = ({ match, history }) => {
 
   const [modal, setModal] = useState(false)
 
+  const [status, setStatus] = useState('')
+
   const dispatch = useDispatch()
 
   const orderDetails = useSelector((state) => state.orderDetails)
@@ -47,7 +49,11 @@ const OrderScreen = ({ match, history }) => {
   const { loading: loadingPay, success: successPay } = orderPay
 
   const orderUpdateStatus = useSelector((state) => state.orderUpdateStatus)
-  const { loading: loadingStatus, success: successStatus } = orderUpdateStatus
+  const {
+    loading: loadingStatus,
+    success: successStatus,
+    error: errorStatus,
+  } = orderUpdateStatus
 
   const orderCancel = useSelector((state) => state.orderCancel)
   const { loading: loadingCancel, success: successCancel } = orderCancel
@@ -104,6 +110,7 @@ const OrderScreen = ({ match, history }) => {
       successCancel ||
       order._id !== orderId
     ) {
+      //window.location.reload(false)
       dispatch({ type: ORDER_PAY_RESET })
       dispatch({ type: ORDER_UPDATE_STATUS_RESET })
       dispatch({ type: ORDER_CANCEL_RESET })
@@ -115,7 +122,19 @@ const OrderScreen = ({ match, history }) => {
         setSdkReady(true)
       }
     }
-  }, [dispatch, orderId, successPay, successStatus, successCancel, order])
+    if (order && status !== '' && order.status !== 'Cancelled') {
+      setStatus('')
+      dispatch(getOrderDetails(orderId))
+    }
+  }, [
+    dispatch,
+    orderId,
+    successPay,
+    successStatus,
+    successCancel,
+    order,
+    status,
+  ])
 
   const displayRazorpay = async () => {
     // creating a new order
@@ -297,26 +316,32 @@ const OrderScreen = ({ match, history }) => {
                   </Col>
                 </Row>
               </ListGroup.Item>
-              {!order.isPaid && order.paymentMethod === 'card' && (
-                <ListGroup.Item>
-                  {loadingPay && <Loader />}
-                  {!sdkReady ? (
-                    <Loader />
-                  ) : (
-                    <PayPalButton
-                      amount={Math.floor(order.totalPrice)}
-                      onSuccess={successPaymentHandler}
-                    />
-                  )}
-                </ListGroup.Item>
-              )}
-              {!order.isPaid && order.paymentMethod === 'UPI' && (
-                <ListGroup.Item>
-                  <Button className='App-link' onClick={displayRazorpay}>
-                    Pay ₹{Math.floor(order.totalPrice)}
-                  </Button>
-                </ListGroup.Item>
-              )}
+              {!order.isPaid &&
+                order.paymentMethod === 'card' &&
+                order.status !== 'Cancelled' && (
+                  <ListGroup.Item>
+                    {loadingPay && <Loader />}
+                    {!sdkReady ? (
+                      <Loader />
+                    ) : (
+                      <PayPalButton
+                        amount={Math.floor(order.totalPrice)}
+                        onSuccess={successPaymentHandler}
+                      />
+                    )}
+                  </ListGroup.Item>
+                )}
+              {!order.isPaid &&
+                order.paymentMethod === 'UPI' &&
+                userInfo &&
+                !userInfo.isAdmin &&
+                order.status !== 'Cancelled' && (
+                  <ListGroup.Item>
+                    <Button className='App-link' onClick={displayRazorpay}>
+                      Pay ₹{Math.floor(order.totalPrice)}
+                    </Button>
+                  </ListGroup.Item>
+                )}
               {['Shipped', 'Placed'].includes(order.status) &&
                 userInfo &&
                 !userInfo.isAdmin && (
@@ -327,8 +352,10 @@ const OrderScreen = ({ match, history }) => {
               {/* {loadingDeliver && <Loader />} */}
               {userInfo &&
                 userInfo.isAdmin &&
-                order.isPaid &&
-                !order.isDelivered && (
+                ((order.isPaid && order.paymentMethod !== 'COD') ||
+                  (!order.isPaid && order.paymentMethod === 'COD')) &&
+                !order.isDelivered &&
+                order.status !== 'Cancelled' && (
                   <ListGroup.Item>
                     <Form.Control
                       className='shadow-sm btn btn-primary '
@@ -336,6 +363,7 @@ const OrderScreen = ({ match, history }) => {
                       value={order.status}
                       onChange={(e) => {
                         updateStatusHandler(e.target.value)
+                        setStatus(e.target.value)
                       }}
                     >
                       {['Placed', 'Shipped', 'Delivered'].map((state) => (

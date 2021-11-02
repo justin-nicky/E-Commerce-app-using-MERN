@@ -78,7 +78,10 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
 export const updateOrderStatus = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id)
   if (order) {
-    if (req.body.status === 'Delivered') {
+    if (order.status === 'Cancelled') {
+      res.status(400)
+      throw new Error('Order was cancelled by the user.')
+    } else if (req.body.status === 'Delivered') {
       order.isPaid = true
       order.deliveredAt = Date.now()
     }
@@ -131,7 +134,7 @@ export const razorpayOrder = asyncHandler(async (req, res) => {
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_SECRET,
     })
-
+    //console.log('instance', instance)
     const options = {
       amount: String(amount) + '00',
       currency: 'INR',
@@ -139,7 +142,6 @@ export const razorpayOrder = asyncHandler(async (req, res) => {
     }
 
     const order = await instance.orders.create(options)
-
     if (!order) return res.status(500).send('Some error occured')
 
     res.json(order)

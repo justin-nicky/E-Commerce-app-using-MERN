@@ -31,7 +31,7 @@ const ProductScreen = ({ match, history }) => {
   //setImages(product.images)
 
   useEffect(() => {
-    if (!product || !product.name) {
+    if (!product || !product.name || product._id !== match.params.id) {
       dispatch(listProductDetails(match.params.id))
     }
     if (product && product.images) {
