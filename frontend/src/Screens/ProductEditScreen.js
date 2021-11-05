@@ -39,6 +39,7 @@ const ProductEditScreen = ({ match, history }) => {
   const [subCategory, setSubCategory] = useState('')
   const [countInStock, setCountInStock] = useState(0)
   const [description, setDescription] = useState('')
+  const [discount, setDiscount] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState([])
   const [modal, setModal] = useState(false)
@@ -97,6 +98,7 @@ const ProductEditScreen = ({ match, history }) => {
       setSubCategory(product.subCategory)
       setCountInStock(product.countInStock)
       setDescription(product.description)
+      setDiscount(product.discount)
       if (product.images) {
         if (product.images.length >= 1) {
           setSubImage1(product.images[0])
@@ -149,6 +151,7 @@ const ProductEditScreen = ({ match, history }) => {
         category,
         description,
         countInStock,
+        discount,
       })
     )
   }
@@ -171,6 +174,11 @@ const ProductEditScreen = ({ match, history }) => {
     )
     category = category[0].subCategory
     setSelectedCategory(category)
+    if (category.length === 1) {
+      setSubCategory(category[0])
+    } else {
+      setSubCategory('')
+    }
   }
 
   const getCroppedImg = (image, crop, setImage) => {
@@ -455,6 +463,16 @@ const ProductEditScreen = ({ match, history }) => {
               ></Form.Control>
             </Form.Group>
 
+            <Form.Group controlId='discount'>
+              <Form.Label>Discount</Form.Label>
+              <Form.Control
+                type='number'
+                placeholder='Enter Discount Percent'
+                value={discount}
+                onChange={(e) => setDiscount(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+
             <Form.Group controlId='description'>
               <Form.Label>Description</Form.Label>
               <Form.Control
@@ -577,6 +595,15 @@ const ProductEditScreen = ({ match, history }) => {
               </Col>
               <Col xs={12} md={8}>
                 {countInStock}
+              </Col>
+            </Row>
+            <hr />
+            <Row>
+              <Col xs={6} md={4}>
+                Discount:
+              </Col>
+              <Col xs={12} md={8}>
+                {discount}%
               </Col>
             </Row>
             <hr />

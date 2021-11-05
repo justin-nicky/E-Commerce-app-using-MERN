@@ -32,6 +32,11 @@ import {
   orderUpdateStatusReducer,
 } from './reducers/orderReducers'
 import { dashboardPopulateReducer } from './reducers/dashboardReducer'
+import {
+  couponCreateReducer,
+  couponDeleteReducer,
+  couponListReducer,
+} from './reducers/couponReducers'
 
 const reducer = combineReducers({
   productList: productListReducer,
@@ -57,6 +62,9 @@ const reducer = combineReducers({
   orderPay: orderPayReducer,
   orderCancel: orderCancelReducer,
   dashboardPopulate: dashboardPopulateReducer,
+  couponCreate: couponCreateReducer,
+  couponList: couponListReducer,
+  couponDelete: couponDeleteReducer,
 })
 
 const userInfoFromStorage = localStorage.getItem('userInfo')

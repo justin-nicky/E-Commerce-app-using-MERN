@@ -18,6 +18,7 @@ import PaymentScreen from './Screens/PaymentScreen'
 import PlaceOrderScreen from './Screens/PlaceOrderScreen'
 import OrderScreen from './Screens/OrderScreen'
 import ProfileScreen from './Screens/ProfileScreen'
+import CouponManage from './Screens/CouponManage'
 
 const App = () => {
   return (
@@ -40,6 +41,7 @@ const App = () => {
           <Route path='/admin/manageusers' component={UserManage} />
           <Route path='/admin/managecategories' component={CategoryManage} />
           <Route path='/admin/manageorders' component={OrderManage} />
+          <Route path='/admin/managecoupons' component={CouponManage} />
           <Route path='/admin/product/:id/edit' component={ProductEditScreen} />
         </Container>
       </main>

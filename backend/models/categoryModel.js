@@ -7,6 +7,13 @@ const categorySchema = mongoose.Schema(
       type: String,
     },
     subCategory: [String],
+    discount: {
+      required: true,
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0,
+    },
   },
   { timestamps: true }
 )

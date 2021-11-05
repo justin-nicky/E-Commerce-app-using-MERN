@@ -40,3 +40,16 @@ export const getAllCategories = asyncHandler(async (req, res) => {
   const categories = await Category.find({})
   res.json(categories)
 })
+
+// @desc   Update categoy
+// @route  PUT /api/categories/:category
+// @access Private/Admin
+export const updateCategory = asyncHandler(async (req, res) => {
+  const categories = await Category.findOneAndUpdate(
+    { category: req.params.category },
+    { discount: req.body.discount },
+    { new: true }
+  )
+  if (!categories) return res.status(404).json({ msg: 'Category not found' })
+  res.json(categories)
+})

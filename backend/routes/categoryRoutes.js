@@ -2,6 +2,7 @@ import express from 'express'
 import {
   createCategory,
   getAllCategories,
+  updateCategory,
 } from '../controllers/categoryController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
@@ -12,10 +13,6 @@ router
   .post(protect, admin, createCategory)
   .get(protect, admin, getAllCategories)
 
-// router
-//   .route('/:id')
-//   .get(getProductById)
-//   .delete(protect, admin, deleteProduct)
-//   .put(protect, admin, updateProduct)
+router.route('/:category').put(protect, admin, updateCategory)
 
 export default router

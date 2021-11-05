@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap'
+import { Button, Row, Col, ListGroup, Image, Card, Form } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 import Message from '../Components/Message'
 import CheckoutSteps from '../Components/CheckoutSteps'
 import { createOrder } from '../actions/orderActions'
@@ -11,6 +12,9 @@ import { clearCartItems } from '../actions/cartActions'
 
 const PlaceOrderScreen = ({ history }) => {
   const dispatch = useDispatch()
+
+  const [couponFromUser, setCouponFromUser] = useState('')
+  const [couponFromServer, setCouponFromServer] = useState({})
 
   const cart = useSelector((state) => state.cart)
 
@@ -60,6 +64,16 @@ const PlaceOrderScreen = ({ history }) => {
       })
     )
     dispatch(clearCartItems())
+  }
+
+  const verifyCouponHandler = async () => {
+    if (couponFromUser !== '') {
+      const { coupon } = axios.get(`/api/coupon/${couponFromUser}`)
+
+      if (coupon) {
+        setCouponFromServer(coupon)
+      }
+    }
   }
 
   return (
@@ -148,8 +162,36 @@ const PlaceOrderScreen = ({ history }) => {
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
-                {error && <Message variant='danger'>{error}</Message>}
+                {
+                  <Form>
+                    <Form.Group className='mb-3' controlId='formBasicName'>
+                      <Form.Label>Do you have a coupon?</Form.Label>
+                      <Form.Control
+                        type='text'
+                        placeholder='Enter coupon'
+                        onChange={(e) => {
+                          setCouponFromUser(e.target.value)
+                        }}
+                      />
+                    </Form.Group>
+                    <Button
+                      variant='secondary'
+                      type='submit'
+                      onClick={verifyCouponHandler}
+                    >
+                      Apply
+                    </Button>
+                  </Form>
+                }
               </ListGroup.Item>
+
+              {error && (
+                <ListGroup.Item>
+                  {' '}
+                  <Message variant='danger'>{error}</Message>{' '}
+                </ListGroup.Item>
+              )}
+
               <ListGroup.Item>
                 <Button
                   type='button'

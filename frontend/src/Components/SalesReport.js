@@ -37,7 +37,6 @@ const SalesReport = ({ orders }) => {
   //       config
   //     )
   //     setOrders(data)
-  console.log(orders)
   //   }
   return (
     <Document>
@@ -49,18 +48,24 @@ const SalesReport = ({ orders }) => {
 
         <Table data={orders}>
           <TableHeader>
-            <TableCell>ID</TableCell>
-            <TableCell>DATE</TableCell>
-            <TableCell>TOTAL</TableCell>
-            <TableCell>PAID</TableCell>
-            <TableCell>STATUS</TableCell>
+            <TableCell style={styles.id}>ID</TableCell>
+            <TableCell style={styles.id}>DATE</TableCell>
+            <TableCell style={styles.id}>TOTAL</TableCell>
+            <TableCell style={styles.id}>PAID</TableCell>
+            <TableCell style={styles.id}>STATUS</TableCell>
           </TableHeader>
           <TableBody>
             <DataTableCell getContent={(r) => r._id} style={styles.id} />
-            <DataTableCell getContent={(r) => r.createdAt.substring(0, 10)} />
-            <DataTableCell getContent={(r) => r.totalPrice} />
-            <DataTableCell getContent={(r) => (r.isPaid ? 'Yes' : 'No')} />
-            <DataTableCell getContent={(r) => r.status} />
+            <DataTableCell
+              getContent={(r) => r.createdAt.substring(0, 10)}
+              style={styles.id}
+            />
+            <DataTableCell getContent={(r) => r.totalPrice} style={styles.id} />
+            <DataTableCell
+              getContent={(r) => (r.isPaid ? 'Yes' : 'No')}
+              style={styles.id}
+            />
+            <DataTableCell getContent={(r) => r.status} style={styles.id} />
           </TableBody>
         </Table>
       </Page>

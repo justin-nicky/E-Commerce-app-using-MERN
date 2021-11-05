@@ -24,9 +24,6 @@ const Product = ({ product }) => {
         <Card.Text as='h3' className='my-3'>
           ₹ {product.price}
         </Card.Text>
-        <Button variant='primary' className='me-3 my-1'>
-          Buy Now
-        </Button>
         <Button variant='primary' className='my-1'>
           Add to cart
         </Button>

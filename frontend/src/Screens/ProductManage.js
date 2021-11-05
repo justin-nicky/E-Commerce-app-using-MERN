@@ -103,6 +103,7 @@ const ProductManage = ({ history, match }) => {
                 <th>ID</th>
                 <th>NAME</th>
                 <th>PRICE</th>
+                <th>DISCOUNT</th>
                 <th>CATEGORY</th>
                 <th>BRAND</th>
                 <th></th>
@@ -114,6 +115,7 @@ const ProductManage = ({ history, match }) => {
                   <td>{product._id}</td>
                   <td>{product.name}</td>
                   <td>₹ {product.price}</td>
+                  <td>{product.discount}%</td>
                   <td>{product.category}</td>
                   <td>{product.brand}</td>
                   <td>
