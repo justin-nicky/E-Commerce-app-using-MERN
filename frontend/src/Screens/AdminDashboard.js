@@ -4,11 +4,14 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   Card,
   Col,
+  Modal,
+  Button,
   Container,
   Row,
   Image,
   DropdownButton,
   Dropdown,
+  Form,
 } from 'react-bootstrap'
 import Loader from '../Components/Loader'
 import { populateDashboard } from '../actions/dashboardActions'
@@ -27,6 +30,18 @@ import SalesReport from '../Components/SalesReport'
 const AdminDashboard = () => {
   const dispatch = useDispatch()
 
+  const [modalShow, setModalShow] = useState(false)
+  const [dates, setDates] = useState({
+    startDate: '',
+    endDate: '',
+  })
+  const [showDownloadComponent, setShowDownloadComponent] = useState(false)
+
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
+
+  const [salesReportInARange, setSalesReportInARange] = useState({})
+
   const dashboardPopulate = useSelector((state) => state.dashboardPopulate)
   const {
     loading: dashboardLoading,
@@ -42,7 +57,7 @@ const AdminDashboard = () => {
     }
   }, [dispatch])
 
-  const showDownloadButton = (type) => {
+  const showDownloadButton = (type, dates) => {
     const orders =
       type === 'weekly'
         ? data?.ordersOfLastWeek
@@ -57,6 +72,31 @@ const AdminDashboard = () => {
         {type}
       </PDFDownloadLink>
     )
+  }
+  const downloadSalesReport = () => {
+    return (
+      <PDFDownloadLink
+        document={<SalesReport orders={salesReportInARange} />}
+        fileName={`Sales Report.pdf`}
+      >
+        Download Report
+      </PDFDownloadLink>
+    )
+  }
+
+  const fetchSalesReport = async (startDate, endDate) => {
+    //fetch sales report in a range
+    const config = {
+      headers: { Authorization: `Bearer ${userInfo.token}` },
+    }
+
+    const { data } = await axios.get(
+      `/api/dashboard/salesreport/${startDate}/${endDate}`,
+      config
+    )
+    setSalesReportInARange(data)
+    setShowDownloadComponent(true)
+    setModalShow(false)
   }
 
   return (
@@ -168,6 +208,14 @@ const AdminDashboard = () => {
               <Dropdown.Item as='button'>
                 {showDownloadButton('yearly')}
               </Dropdown.Item>
+              <Dropdown.Item
+                as='button'
+                onClick={() => {
+                  setModalShow(true)
+                }}
+              >
+                Custom Range
+              </Dropdown.Item>
             </DropdownButton>
           </Col>
         </Row>
@@ -184,6 +232,105 @@ const AdminDashboard = () => {
           </Col>
         </Row>
       </Container>
+
+      <Modal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        size='lg'
+        aria-labelledby='contained-modal-title-vcenter'
+        centered
+      >
+        <Modal.Body className='m-2'>
+          <Modal.Title id='contained-modal-title-vcenter'>
+            {' '}
+            Choose Dates
+          </Modal.Title>
+
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault()
+            }}
+          >
+            <Form.Group className='mb-3' controlId='formBasicDate'>
+              <Form.Label>Start Date: </Form.Label>
+              <input
+                type='datetime-local'
+                required
+                className='mx-3 '
+                max={new Date().toISOString().split('.')[0]}
+                onChange={(e) => {
+                  //setFormData({ ...formData, expiryDate: e.target.value })
+                  setDates({ ...dates, startDate: e.target.value })
+                }}
+              ></input>
+            </Form.Group>
+            <Form.Group className='mb-3' controlId='formBasicDate'>
+              <Form.Label>End Date: </Form.Label>
+              <input
+                type='datetime-local'
+                required
+                className='mx-3 '
+                onChange={(e) => {
+                  //setFormData({ ...formData, expiryDate: e.target.value })
+                  setDates({ ...dates, endDate: e.target.value })
+                }}
+                max={new Date().toISOString().split('.')[0]}
+                min={dates.startDate}
+              ></input>
+            </Form.Group>
+
+            <Center>
+              {(dates.startDate !== '' || dates.endDate !== '') && (
+                <Button
+                  className='mx-3'
+                  type='submit'
+                  variant='primary'
+                  onClick={() => {
+                    fetchSalesReport(dates.startDate, dates.endDate)
+                  }}
+                >
+                  Generate Report
+                </Button>
+              )}
+              <Button
+                className='mx-3'
+                variant='secondary'
+                onClick={() => {
+                  setModalShow(false)
+                }}
+              >
+                Cancel
+              </Button>
+            </Center>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={showDownloadComponent}
+        onHide={() => setShowDownloadComponent(false)}
+        size='sm'
+        aria-labelledby='contained-modal-title-vcenter'
+        centered
+      >
+        <Modal.Body className='m-2'>
+          <PDFDownloadLink
+            as='button'
+            document={<SalesReport orders={salesReportInARange} />}
+            fileName={`Sales Report.pdf`}
+          >
+            Download Report
+          </PDFDownloadLink>
+          <Button
+            className='mx-3'
+            variant='secondary'
+            onClick={() => {
+              setShowDownloadComponent(false)
+            }}
+          >
+            Close
+          </Button>
+        </Modal.Body>
+      </Modal>
     </>
   )
 }

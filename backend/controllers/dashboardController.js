@@ -32,7 +32,12 @@ export const getDashboardData = asyncHandler(async (req, res) => {
         },
       },
     },
-    { $group: { _id: { $dayOfYear: '$createdAt' }, count: { $sum: 1 } } },
+    {
+      $group: {
+        _id: { $dayOfYear: '$createdAt' },
+        count: { $sum: '$totalPrice' },
+      },
+    },
   ])
   const paymentMethods = Order.aggregate([
     {
@@ -112,31 +117,26 @@ export const getDashboardData = asyncHandler(async (req, res) => {
   })
 })
 
-// // @desc   Fetch dashboard data
-// // @route  GET /api/salesreport/:type
-// // @access Private/Admin
-// export const getSalesReport = asyncHandler(async (req, res) => {
-//   const { type } = req.params
-//   const days =
-//     type === 'weekly'
-//       ? 7
-//       : type === 'monthly'
-//       ? 30
-//       : type === 'yearly'
-//       ? 365
-//       : 0
-//   if (days === 0) {
-//     throw new Error('Invalid type')
-//   }
-//   const salesData = await Order.aggregate([
-//     {
-//       $match: {
-//         status: { $ne: 'Cancelled' },
-//         createdAt: {
-//           $gte: new Date(new Date() - days * 60 * 60 * 24 * 1000),
-//         },
-//       },
-//     },
-//   ])
-//   res.json(salesData)
-// })
+// @desc   Fetch dashboard data
+// @route  GET /api/dashboard/salesreport/:startDate/:endDate
+// @access Private/Admin
+export const getRestrictedSalesReport = asyncHandler(async (req, res) => {
+  const { startDate, endDate } = req.params
+  // startDate = startDate + ':00.000+00:00'
+  // endDate = endDate + ':00.000+00:00'
+  console.log(startDate, endDate)
+
+  const salesData = await Order.aggregate([
+    {
+      $match: {
+        status: { $ne: 'Cancelled' },
+        createdAt: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      },
+    },
+  ])
+  console.log('salesData', salesData)
+  res.json(salesData)
+})

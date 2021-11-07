@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import Razorpay from 'razorpay'
 import dotenv from 'dotenv'
 import Order from '../models/orderModel.js'
+import Product from '../models/productModel.js'
 
 dotenv.config()
 
@@ -22,8 +23,13 @@ export const addOrderItems = asyncHandler(async (req, res) => {
   if (orderItems && orderItems.length === 0) {
     res.status(400)
     throw new Error('No order Items')
-    return
   } else {
+    orderItems.forEach(async (item) => {
+      const product = await Product.findById(item.product)
+      product.countInStock -= item.qty
+      await product.save()
+    })
+
     const order = new Order({
       orderItems,
       user: req.user._id,
@@ -102,6 +108,14 @@ export const cancelOrder = asyncHandler(async (req, res) => {
   if (order) {
     order.status = 'Cancelled'
     const updatedOrder = await order.save()
+
+    //update product stock count
+    order.orderItems.forEach(async (item) => {
+      const product = await Product.findById(item.product)
+      product.countInStock += item.qty
+      await product.save()
+    })
+
     res.json(updatedOrder)
   } else {
     res.status(404)
