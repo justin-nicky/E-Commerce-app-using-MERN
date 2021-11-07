@@ -63,7 +63,22 @@ const CartScreen = ({ match, location, history }) => {
                       {_item.name}
                     </Link>
                   </Col>
-                  <Col md={2}>₹ {_item.price}</Col>
+
+                  {/* { <Col md={2}>₹ {_item.price}</Col>} */}
+
+                  {_item.discount > 0 || _item.categoryDiscount1 > 0 ? (
+                    <Col>
+                      ₹{' '}
+                      {Math.min(
+                        _item.price - (_item.price * _item.discount) / 100,
+                        _item.price -
+                          (_item.price * _item.categoryDiscount1) / 100
+                      )}
+                    </Col>
+                  ) : (
+                    <Col md={2}>₹ {_item.price}</Col>
+                  )}
+
                   <Col md={2}>
                     <Form.Control
                       as='select'
@@ -108,7 +123,17 @@ const CartScreen = ({ match, location, history }) => {
                 ITEMS
               </h5>
               ₹{' '}
-              {cartItems.reduce((acc, item) => acc + item.qty * item.price, 0)}
+              {cartItems.reduce((acc, item) => {
+                let price =
+                  item.discount > 0 || item.categoryDiscount1 > 0
+                    ? Math.min(
+                        item.price - (item.price * item.discount) / 100,
+                        item.price - (item.price * item.categoryDiscount1) / 100
+                      )
+                    : item.price
+
+                return acc + item.qty * price
+              }, 0)}
             </ListGroup.Item>
             <ListGroup.Item>
               <Center>

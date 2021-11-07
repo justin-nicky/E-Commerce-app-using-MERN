@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom'
 import { Card, Button } from 'react-bootstrap'
 import Rating from './Rating'
 
-const Product = ({ product }) => {
+const Product = ({ product, history, match }) => {
+  const addToCartHandler = () => {
+    history.push(`/cart/${product._id}?qty=1`)
+  }
+
   return (
     <Card className='my-3 p-3 rounded'>
       <Link to={`product/${product._id}`}>
@@ -21,10 +25,39 @@ const Product = ({ product }) => {
             text={` from ${product.numReviews} reviews`}
           />
         </Card.Text>
-        <Card.Text as='h3' className='my-3'>
-          ₹ {product.price}
-        </Card.Text>
-        <Button variant='primary' className='my-1'>
+
+        {/* {(product.discount === 0 || product.categoryDiscount1 === 0) && (
+          <Card.Text as='h4' className='my-3'>
+            ₹ {product.price}
+          </Card.Text>
+        )} */}
+
+        {product.discount > 0 || product.categoryDiscount1 > 0 ? (
+          <>
+            <Card.Text
+              as='h4'
+              className='my-3 text-secondary fs-6 font-weight-light'
+              style={{ textDecoration: 'line-through' }}
+            >
+              ₹ {product.price}
+            </Card.Text>
+
+            <Card.Text as='h4' className='my-3'>
+              ₹{' '}
+              {Math.min(
+                product.price - (product.price * product.discount) / 100,
+                product.price -
+                  (product.price * product.categoryDiscount1) / 100
+              )}
+            </Card.Text>
+          </>
+        ) : (
+          <Card.Text as='h4' className='my-3'>
+            ₹ {product.price}
+          </Card.Text>
+        )}
+
+        <Button variant='primary' className='my-1' onClick={addToCartHandler}>
           Add to cart
         </Button>
       </Card.Body>

@@ -25,6 +25,10 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    categoryDiscount: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+    },
     subCategory: {
       type: String,
       required: true,

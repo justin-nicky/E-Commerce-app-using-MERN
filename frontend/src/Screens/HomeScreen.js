@@ -7,7 +7,7 @@ import { listProducts } from '../actions/productActions'
 import Loader from '../Components/Loader'
 import Message from '../Components/Message'
 
-const HomeScreen = () => {
+const HomeScreen = ({ history, match }) => {
   const dispatch = useDispatch()
   const productList = useSelector((state) => state.productList)
   const { loading, error, products } = productList
@@ -28,7 +28,7 @@ const HomeScreen = () => {
         <Row>
           {products.map((product) => (
             <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
-              <Product product={product} />
+              <Product product={product} history={history} match={match} />
             </Col>
           ))}
         </Row>

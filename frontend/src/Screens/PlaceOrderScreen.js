@@ -15,6 +15,9 @@ const PlaceOrderScreen = ({ history }) => {
 
   const [couponFromUser, setCouponFromUser] = useState('')
   const [couponFromServer, setCouponFromServer] = useState({})
+  const [showCouponForm, setShowCouponForm] = useState(true)
+  const [couponError, setCouponError] = useState('')
+  //const [discount, setDiscount] = useState(0)
 
   const cart = useSelector((state) => state.cart)
 
@@ -28,6 +31,14 @@ const PlaceOrderScreen = ({ history }) => {
     return (Math.round(num * 100) / 100).toFixed(2)
   }
 
+  cart.discount = cart.cartItems.reduce((acc, item) => {
+    let price = Math.max(
+      (item.price * item.discount) / 100,
+      (item.price * item.categoryDiscount1) / 100
+    )
+    return acc + item.qty * price
+  }, 0)
+
   cart.itemsPrice = addDecimals(
     cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
   )
@@ -36,11 +47,23 @@ const PlaceOrderScreen = ({ history }) => {
   cart.totalPrice = (
     Number(cart.itemsPrice) +
     Number(cart.shippingPrice) +
-    Number(cart.taxPrice)
+    Number(cart.taxPrice) -
+    Number(cart.discount)
   ).toFixed(2)
 
   const orderCreate = useSelector((state) => state.orderCreate)
   const { order, success, error } = orderCreate
+
+  const userLogin = useSelector((state) => state.userLogin)
+  const { userInfo } = userLogin
+
+  const [crt, setCrt] = useState({
+    discount: cart.discount,
+    itemsPrice: cart.itemsPrice,
+    totalPrice: cart.totalPrice,
+    shippingPrice: cart.shippingPrice,
+    taxPrice: cart.taxPrice,
+  })
 
   useEffect(() => {
     if (success) {
@@ -49,7 +72,7 @@ const PlaceOrderScreen = ({ history }) => {
       dispatch({ type: ORDER_CREATE_RESET })
     }
     // eslint-disable-next-line
-  }, [history, success])
+  }, [history, success, crt])
 
   const placeOrderHandler = () => {
     dispatch(
@@ -66,13 +89,36 @@ const PlaceOrderScreen = ({ history }) => {
     dispatch(clearCartItems())
   }
 
-  const verifyCouponHandler = async () => {
+  const verifyCouponHandler = async (e) => {
+    e.preventDefault()
     if (couponFromUser !== '') {
-      const { coupon } = axios.get(`/api/coupon/${couponFromUser}`)
+      try {
+        const config = {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
+        }
+        const { data } = await axios.get(
+          `/api/coupons/${couponFromUser}`,
+          config
+        )
+        if (data) {
+          setCouponFromServer(data.coupon)
+          setCouponError('')
+          setShowCouponForm(false)
 
-      if (coupon) {
-        setCouponFromServer(coupon)
+          if (crt.discount < (data.coupon.discount * crt.itemsPrice) / 100) {
+            //cart.discount = (couponFromServer.discount * cart.itemsPrice) / 100
+            let discount = (data.coupon.discount * crt.itemsPrice) / 100
+            let totalPrice = crt.totalPrice - crt.discount + discount
+            setCrt({ ...crt, discount, totalPrice })
+          }
+        }
+      } catch (error) {
+        setCouponFromServer({})
+        setShowCouponForm(true)
+        setCouponError('Invalid Coupon')
       }
+    } else {
+      setCouponError('Please enter a coupon code')
     }
   }
 
@@ -121,8 +167,21 @@ const PlaceOrderScreen = ({ history }) => {
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x ₹{item.price} = ₹{item.qty * item.price}
+                          {item.qty} x ₹{' '}
+                          {Math.min(
+                            item.price - (item.price * item.discount) / 100,
+                            item.price -
+                              (item.price * item.categoryDiscount1) / 100
+                          )}{' '}
+                          = ₹
+                          {item.qty *
+                            Math.min(
+                              item.price - (item.price * item.discount) / 100,
+                              item.price -
+                                (item.price * item.categoryDiscount1) / 100
+                            )}
                         </Col>
+                        {/* )} */}
                       </Row>
                     </ListGroup.Item>
                   ))}
@@ -140,29 +199,35 @@ const PlaceOrderScreen = ({ history }) => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items</Col>
-                  <Col>₹{cart.itemsPrice}</Col>
+                  <Col>₹{crt.itemsPrice}</Col>
+                </Row>
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <Row>
+                  <Col>Discount</Col>
+                  <Col>- ₹{crt.discount}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping</Col>
-                  <Col>₹{cart.shippingPrice}</Col>
+                  <Col>₹{crt.shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>₹{cart.taxPrice}</Col>
+                  <Col>₹{crt.taxPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>₹{cart.totalPrice}</Col>
+                  <Col>₹{crt.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
-                {
+                {showCouponForm ? (
                   <Form>
                     <Form.Group className='mb-3' controlId='formBasicName'>
                       <Form.Label>Do you have a coupon?</Form.Label>
@@ -173,6 +238,7 @@ const PlaceOrderScreen = ({ history }) => {
                           setCouponFromUser(e.target.value)
                         }}
                       />
+                      <span className='text-danger'>{couponError}</span>
                     </Form.Group>
                     <Button
                       variant='secondary'
@@ -182,7 +248,20 @@ const PlaceOrderScreen = ({ history }) => {
                       Apply
                     </Button>
                   </Form>
-                }
+                ) : (
+                  <>
+                    {crt.discount >
+                    (couponFromServer.discount * crt.itemsPrice) / 100 ? (
+                      <>
+                        <Message> You already have the best price </Message>
+                      </>
+                    ) : (
+                      <>
+                        <Message variant='success'> Coupon Applied </Message>
+                      </>
+                    )}
+                  </>
+                )}
               </ListGroup.Item>
 
               {error && (

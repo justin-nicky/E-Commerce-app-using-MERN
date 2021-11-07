@@ -1,22 +1,46 @@
 import Product from '../models/productModel.js'
 import asyncHandler from 'express-async-handler'
+import Category from '../models/categoryModel.js'
 
 // @desc   Fetch all products
 // @route  GET /api/products
 // @access Public
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({})
-  res.json(products)
+  const products = await Product.find({}).populate(
+    'categoryDiscount',
+    'discount'
+  )
+  let newProductsObject = products.map((product) => {
+    if (product.categoryDiscount != null) {
+      product.categoryDiscount1 = product.categoryDiscount.discount
+      return { ...product._doc, categoryDiscount1: product.categoryDiscount1 }
+    } else {
+      product.categoryDiscount1 = 0
+      return { ...product._doc, categoryDiscount1: product.categoryDiscount1 }
+    }
+  })
+  res.json(newProductsObject)
 })
 
 // @desc   Fetch a product
 // @route  GET /api/products/:id
 // @access Public
 const getProductById = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id)
+  let product = await Product.findById(req.params.id).populate(
+    'categoryDiscount',
+    'discount'
+  )
 
   if (product != null) {
-    res.json(product)
+    // if (product.categoryDiscount != null) {
+    //   product.categoryDiscount1 = 44
+    // } else {
+    //   product.categoryDiscount1 = 0
+    // }
+    res.json({
+      ...product._doc,
+      categoryDiscount1: product.categoryDiscount.discount,
+    })
   } else {
     res.status(404)
     throw new Error('Product not found.')
@@ -79,6 +103,8 @@ const updateProduct = asyncHandler(async (req, res) => {
 
   const product = await Product.findById(req.params.id)
 
+  const { _id: categoryId } = await Category.findOne({ category })
+
   if (product) {
     product.name = name
     product.price = price
@@ -90,6 +116,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.category = category
     product.countInStock = countInStock
     product.discount = discount
+    product.categoryDiscount = categoryId
 
     const updatedProduct = await product.save()
     res.json(updatedProduct)

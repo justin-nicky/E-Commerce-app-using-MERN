@@ -8,6 +8,7 @@ import {
   ListGroupItem,
   Row,
   Carousel,
+  Card,
 } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -109,9 +110,35 @@ const ProductScreen = ({ match, history }) => {
                     text={` from ${product.numReviews} reviews`}
                   />
                 </ListGroup.Item>
+
                 <ListGroup.Item>
-                  <h4>₹ {product.price}</h4>
+                  {product.discount > 0 || product.categoryDiscount1 > 0 ? (
+                    <>
+                      <Card.Text
+                        as='h4'
+                        className='my-3 text-secondary fs-6 font-weight-light'
+                        style={{ textDecoration: 'line-through' }}
+                      >
+                        ₹ {product.price}
+                      </Card.Text>
+
+                      <Card.Text as='h4' className='my-3'>
+                        ₹{' '}
+                        {Math.min(
+                          product.price -
+                            (product.price * product.discount) / 100,
+                          product.price -
+                            (product.price * product.categoryDiscount1) / 100
+                        )}
+                      </Card.Text>
+                    </>
+                  ) : (
+                    <Card.Text as='h4' className='my-3'>
+                      ₹ {product.price}
+                    </Card.Text>
+                  )}
                 </ListGroup.Item>
+
                 <ListGroup.Item>
                   <p>
                     {' '}
@@ -126,9 +153,19 @@ const ProductScreen = ({ match, history }) => {
                 <ListGroupItem>
                   <Row>
                     <Col>price:</Col>
-                    <Col>
-                      <strong>₹ {product.price}</strong>
-                    </Col>
+                    {product && (
+                      <Col>
+                        <strong>
+                          ₹{' '}
+                          {Math.min(
+                            product.price -
+                              (product.price * product.discount) / 100,
+                            product.price -
+                              (product.price * product.categoryDiscount1) / 100
+                          )}
+                        </strong>
+                      </Col>
+                    )}
                   </Row>
                 </ListGroupItem>
                 <ListGroupItem>
@@ -175,7 +212,7 @@ const ProductScreen = ({ match, history }) => {
                         Add To Cart
                       </Button>
                     </Col>
-                    <Col>
+                    {/* <Col>
                       <Button
                         className='btn-block'
                         type='button'
@@ -183,7 +220,7 @@ const ProductScreen = ({ match, history }) => {
                       >
                         Buy Now
                       </Button>
-                    </Col>
+                    </Col> */}
                   </Row>
                 </ListGroupItem>
               </ListGroup>

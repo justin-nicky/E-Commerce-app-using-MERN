@@ -13,6 +13,7 @@ import couponRoutes from './routes/couponRoutes.js'
 import { notFound, errorHandler } from './middleware/errorMiddleware.js'
 
 dotenv.config()
+
 const PORT = process.env.PORT || 5000
 
 connectDB()
@@ -20,26 +21,18 @@ connectDB()
 const app = express()
 
 app.use(express.json())
-
 app.use(morgan('tiny'))
 
 const __dirname = path.resolve()
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')))
 
 app.use('/api/products', productRoutes)
-
 app.use('/api/users', userRoutes)
-
 app.use('/api/upload', uploadRoutes)
-
 app.use('/api/categories', categoryRoutes)
-
 app.use('/api/orders', orderRoutes)
-
 app.use('/api/coupons', couponRoutes)
-
 app.use('/api/dashboard', dashboardRoutes)
-
 app.get('/api/config/paypal', (req, res) => {
   res.send(process.env.PAYPAL_CLIENT_ID)
 })
