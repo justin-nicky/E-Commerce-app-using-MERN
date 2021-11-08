@@ -235,7 +235,7 @@ const ProductEditScreen = ({ match, history }) => {
                       if (e.target.files.length > 0) {
                         setSrcImg(URL.createObjectURL(e.target.files[0]))
                         // console.log(e.target.files[0]);
-
+                        setSubImage1(e.target.files[0])
                         setIsModal1Visible(true)
                       }
                     }}
@@ -310,7 +310,7 @@ const ProductEditScreen = ({ match, history }) => {
                       if (e.target.files.length > 0) {
                         setSrcImg(URL.createObjectURL(e.target.files[0]))
                         // console.log(e.target.files[0]);
-
+                        //set
                         setIsModal3Visible(true)
                       }
                       //uploadImageHandler(e, setSubImage2, setSub2Loading)

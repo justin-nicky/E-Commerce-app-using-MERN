@@ -6,7 +6,6 @@ import store from '../store'
 export const fileUploadAndResize = (e) => {
   return new Promise((resolve, reject) => {
     let file = e.target.files[0]
-
     const {
       userLogin: { userInfo },
     } = store.getState()
@@ -27,13 +26,13 @@ export const fileUploadAndResize = (e) => {
         0,
         (uri) => {
           axios
-            .post(`/api/upload`, { image: e }, config)
+            .post(`/api/upload`, { image: uri }, config)
             .then((res) => {
-              console.log('IMAGE UPLOAD RES DATA', res)
+              //console.log('IMAGE UPLOAD RES DATA', res)
               resolve(res.data.url)
             })
             .catch((err) => {
-              console.log('CLOUDINARY UPLOAD ERR', err)
+              //console.log('CLOUDINARY UPLOAD ERR', err)
               reject(err)
             })
         },
@@ -69,11 +68,11 @@ export const fileUpload = (e) => {
       axios
         .post(`/api/upload`, { image: e }, config)
         .then((res) => {
-          console.log('IMAGE UPLOAD RES DATA', res)
+          //console.log('IMAGE UPLOAD RES DATA', res)
           resolve(res.data.url)
         })
         .catch((err) => {
-          console.log('CLOUDINARY UPLOAD ERR', err)
+          //console.log('CLOUDINARY UPLOAD ERR', err)
           reject(err)
         })
       // },

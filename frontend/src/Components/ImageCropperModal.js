@@ -18,7 +18,7 @@ function ImageCropperModal({
   //change the aspect ratio of crop tool as you preferred
   const [crop, setCrop] = useState({ aspect: 1 / 1 })
 
-  useEffect(() => console.log(srcImg))
+  //useEffect(() => console.log(srcImg))
 
   const handleOk = async () => {
     await getCroppedImg()
