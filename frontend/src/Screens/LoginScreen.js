@@ -12,6 +12,7 @@ import { googleSignIn, login } from '../actions/userActions'
 const LoginScreen = ({ location, history }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState({ email: '', password: '' })
 
   const dispatch = useDispatch()
 
@@ -39,7 +40,16 @@ const LoginScreen = ({ location, history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault()
-    dispatch(login(email, password))
+    if (email && password) {
+      dispatch(login(email, password))
+    } else {
+      if (!email) {
+        setErrorMessage({ ...errorMessage, email: 'Email is required' })
+      }
+      if (!password) {
+        setErrorMessage({ ...errorMessage, password: 'Password is required' })
+      }
+    }
   }
 
   return (
@@ -60,9 +70,9 @@ const LoginScreen = ({ location, history }) => {
             }}
             placeholder='Enter email'
           />
-          {/* <Form.Text className='text-muted'>
-            We'll never share your email with anyone else.
-          </Form.Text> */}
+          <Form.Text className='text-danger fs-6'>
+            {errorMessage.email}
+          </Form.Text>
         </Form.Group>
 
         <Form.Group className='my-3 ' controlId='password'>
@@ -75,6 +85,9 @@ const LoginScreen = ({ location, history }) => {
             }}
             placeholder='Enter password'
           />
+          <Form.Text className='text-danger fs-6'>
+            {errorMessage.password}
+          </Form.Text>
         </Form.Group>
         <Center>
           <Button variant='primary' type='submit'>

@@ -27,7 +27,7 @@ export const fileUploadAndResize = (e) => {
         0,
         (uri) => {
           axios
-            .post(`/api/upload`, { image: uri }, config)
+            .post(`/api/upload`, { image: e }, config)
             .then((res) => {
               console.log('IMAGE UPLOAD RES DATA', res)
               resolve(res.data.url)
@@ -39,6 +39,46 @@ export const fileUploadAndResize = (e) => {
         },
         'base64'
       )
+    }
+  })
+}
+export const fileUpload = (e) => {
+  return new Promise((resolve, reject) => {
+    let file = e
+    //.target.files[0]
+
+    const {
+      userLogin: { userInfo },
+    } = store.getState()
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    }
+
+    if (file) {
+      // Resizer.imageFileResizer(
+      //   file,
+      //   1280,
+      //   720,
+      //   'JPEG',
+      //   65,
+      //   0,
+      //   (uri) => {
+      axios
+        .post(`/api/upload`, { image: e }, config)
+        .then((res) => {
+          console.log('IMAGE UPLOAD RES DATA', res)
+          resolve(res.data.url)
+        })
+        .catch((err) => {
+          console.log('CLOUDINARY UPLOAD ERR', err)
+          reject(err)
+        })
+      // },
+      // 'base64'
+      // )
     }
   })
 }

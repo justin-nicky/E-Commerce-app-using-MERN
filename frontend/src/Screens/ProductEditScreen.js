@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Form,
@@ -11,17 +11,16 @@ import {
   Image,
 } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import ReactCrop from 'react-image-crop'
-import Cropper from 'react-easy-crop'
-import 'react-image-crop/dist/ReactCrop.css'
 import Message from '../Components/Message'
 import Loader from '../Components/Loader'
 import FormContainer from '../Components/FormContainer'
 import Center from '../Components/Center'
+import Resizer from 'react-image-file-resizer'
 import { listProductDetails, updateProduct } from '../actions/productActions'
 import { listCategories } from '../actions/categoryActions'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 import { fileUploadAndResize } from '../helpers/FileUpload'
+import ImageCropperModal from '../Components/ImageCropperModal'
 
 const ProductEditScreen = ({ match, history }) => {
   const productId = match.params.id
@@ -43,14 +42,14 @@ const ProductEditScreen = ({ match, history }) => {
   const [uploading, setUploading] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState([])
   const [modal, setModal] = useState(false)
-  const [crop1, setCrop1] = useState({ aspect: 1 / 1 })
-  const [crop2, setCrop2] = useState({ aspect: 1 / 1 })
-  const [crop3, setCrop3] = useState({ aspect: 1 / 1 })
-  const [cropping1, setCropping1] = useState(false)
-  const [cropping2, setCropping2] = useState(false)
-  const [cropping3, setCropping3] = useState(false)
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
+  //   const [image, setImage] = useState(null);
+  //   const [crop, setCrop] = useState({ aspect: 1 / 1 });
+  const [isModal1Visible, setIsModal1Visible] = useState(false)
+  const [isModal2Visible, setIsModal2Visible] = useState(false)
+  const [isModal3Visible, setIsModal3Visible] = useState(false)
+  const [srcImg, setSrcImg] = useState(null)
+  const [result, setResult] = useState(null)
+  const [files, setFiles] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -111,32 +110,28 @@ const ProductEditScreen = ({ match, history }) => {
     //}
   }, [dispatch, history, productId, product, successUpdate, userInfo])
 
-  // const uploadFileHandler = async (e) => {
-  //   const file = e.target.files[0]
-  //   const formData = new FormData()
-  //   formData.append('image', file)
-  //   setUploading(true)
+  const uploadFileHandler = async (e) => {
+    const file = e.target.files[0]
+    const formData = new FormData()
+    formData.append('image', file)
+    setUploading(true)
 
-  //   try {
-  //     const config = {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     }
+    try {
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
 
-  //     const { data } = await axios.post('/api/upload', formData, config)
+      const { data } = await axios.post('/api/upload', formData, config)
 
-  //     setPreviewImage(data)
-  //     setUploading(false)
-  //   } catch (error) {
-  //     console.error(error)
-  //     setUploading(false)
-  //   }
-  // }
-
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    console.log(croppedArea, croppedAreaPixels)
-  }, [])
+      setPreviewImage(data)
+      setUploading(false)
+    } catch (error) {
+      console.error(error)
+      setUploading(false)
+    }
+  }
 
   const submitHandler = () => {
     dispatch(
@@ -181,51 +176,14 @@ const ProductEditScreen = ({ match, history }) => {
     }
   }
 
-  const getCroppedImg = (image, crop, setImage) => {
-    const canvas = document.createElement('canvas')
-    const scaleX = image.naturalWidth / image.width
-    const scaleY = image.naturalHeight / image.height
-    canvas.width = crop.width
-    canvas.height = crop.height
-    const ctx = canvas.getContext('2d')
+  //   const handleImage = (e) => {
+  //     if (e.target.files.length > 0) {
+  //       setSrcImg(URL.createObjectURL(e.target.files[0]))
+  //       // console.log(e.target.files[0]);
 
-    // New lines to be added
-    const pixelRatio = window.devicePixelRatio
-    canvas.width = crop.width * pixelRatio
-    canvas.height = crop.height * pixelRatio
-    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-    ctx.imageSmoothingQuality = 'high'
-
-    console.log(crop)
-
-    ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
-      0,
-      0,
-      crop.width,
-      crop.height
-    )
-
-    // As Base64 string
-    //const base64Image = canvas.toDataURL('image/jpeg')
-
-    // As a blob
-    return new Promise((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => {
-          blob.name = Date.now()
-          resolve(blob)
-          setImage(blob)
-        },
-        'image/jpeg',
-        1
-      )
-    })
-  }
+  //       setIsModalVisible(true)
+  //     }
+  //   }
 
   return (
     <>
@@ -270,12 +228,16 @@ const ProductEditScreen = ({ match, history }) => {
               <Form.Label>Images</Form.Label>
               <Row>
                 <Col md={4}>
-                  {/* <Form.Group
+                  <Form.Group
                     className='mb-3 fluid'
                     onInput={(e) => {
-                      console.log(URL.createObjectURL(e.target.files[0]))
-                      setSubImage1(URL.createObjectURL(e.target.files[0]))
                       //uploadImageHandler(e, setSubImage1, setSub1Loading)
+                      if (e.target.files.length > 0) {
+                        setSrcImg(URL.createObjectURL(e.target.files[0]))
+                        // console.log(e.target.files[0]);
+
+                        setIsModal1Visible(true)
+                      }
                     }}
                     style={{
                       cursor: 'pointer',
@@ -290,59 +252,32 @@ const ProductEditScreen = ({ match, history }) => {
                     {sub1Loading ? (
                       <Loader />
                     ) : (
-                      <>
-                        {cropping1 ? (
-                          <ReactCrop
-                            src={subImage1}
-                            crop={crop1}
-                            onChange={(newCrop) => setCrop1(newCrop)}
-                          />
-                        ) : (
-                          <Image
-                            src={subImage1}
-                            alt='image'
-                            fluid
-                            onClick={() => {
-                              document.getElementById('imageInput1').click()
-                            }}
-                          />
-                        )}
-                        <Button className='m-1'>Upload</Button>
-
-                        {cropping1 ? (
-                          <Button
-                            className='m-1'
-                            onClick={() => {
-                              setCropping1(false)
-                              getCroppedImg(subImage1, crop1, setSubImage1)
-                            }}
-                          >
-                            Done
-                          </Button>
-                        ) : (
-                          <Button
-                            className='m-1'
-                            onClick={() => {
-                              setCropping1(true)
-                            }}
-                          >
-                            Crop
-                          </Button>
-                        )}
-                      </>
+                      <Image
+                        src={subImage1}
+                        alt='image'
+                        fluid
+                        onClick={() => {
+                          document.getElementById('imageInput1').click()
+                        }}
+                      />
                     )}
-                  </Form.Group> */}
+                  </Form.Group>
                 </Col>
-                <Col md={4} style={{ position: 'relative' }}>
-                  {/* Row */}
+                <Col md={4}>
                   <Form.Group
                     className='mb-3 fluid'
                     onInput={(e) => {
-                      uploadImageHandler(
-                        e,
-                        setPreviewImage,
-                        setPreviewImageLoading
-                      )
+                      //   uploadImageHandler(
+                      //     e,
+                      //     setPreviewImage,
+                      //     setPreviewImageLoading
+                      //
+                      if (e.target.files.length > 0) {
+                        setSrcImg(URL.createObjectURL(e.target.files[0]))
+                        // console.log(e.target.files[0]);
+
+                        setIsModal2Visible(true)
+                      }
                     }}
                     style={{
                       cursor: 'pointer',
@@ -357,28 +292,14 @@ const ProductEditScreen = ({ match, history }) => {
                     {previewImageLoading ? (
                       <Loader />
                     ) : (
-                      <>
-                        {cropping2 ? (
-                          <Cropper
-                            image={previewImage}
-                            crop={crop}
-                            zoom={zoom}
-                            aspect={1 / 1}
-                            onCropChange={setCrop}
-                            onCropComplete={onCropComplete}
-                            onZoomChange={setZoom}
-                          />
-                        ) : (
-                          <Image
-                            src={previewImage}
-                            alt='image'
-                            fluid
-                            onClick={() => {
-                              document.getElementById('imageInput2').click()
-                            }}
-                          />
-                        )}
-                      </>
+                      <Image
+                        src={previewImage}
+                        alt='image'
+                        fluid
+                        onClick={() => {
+                          document.getElementById('imageInput2').click()
+                        }}
+                      />
                     )}
                   </Form.Group>
                 </Col>
@@ -386,7 +307,13 @@ const ProductEditScreen = ({ match, history }) => {
                   <Form.Group
                     className='mb-3 fluid'
                     onInput={(e) => {
-                      uploadImageHandler(e, setSubImage2, setSub2Loading)
+                      if (e.target.files.length > 0) {
+                        setSrcImg(URL.createObjectURL(e.target.files[0]))
+                        // console.log(e.target.files[0]);
+
+                        setIsModal3Visible(true)
+                      }
+                      //uploadImageHandler(e, setSubImage2, setSub2Loading)
                     }}
                     style={{
                       cursor: 'pointer',
@@ -412,34 +339,6 @@ const ProductEditScreen = ({ match, history }) => {
                     )}
                   </Form.Group>
                 </Col>
-              </Row>
-              <Row>
-                <Col md={4}></Col>
-                <Col md={4}>
-                  <Button className='m-1'>Upload</Button>
-
-                  {cropping2 ? (
-                    <Button
-                      className='m-1'
-                      onClick={() => {
-                        setCropping2(false)
-                        //getCroppedImg(subImage1, crop1, setSubImage1)
-                      }}
-                    >
-                      Done
-                    </Button>
-                  ) : (
-                    <Button
-                      className='m-1'
-                      onClick={() => {
-                        setCropping2(true)
-                      }}
-                    >
-                      Crop
-                    </Button>
-                  )}
-                </Col>
-                <Col md={4}></Col>
               </Row>
             </Form.Group>
 
@@ -670,6 +569,33 @@ const ProductEditScreen = ({ match, history }) => {
           </Center>
         </Modal.Body>
       </Modal>
+
+      <ImageCropperModal
+        isModalVisible={isModal1Visible}
+        setIsModalVisible={setIsModal1Visible}
+        //showModal={showModal}
+        srcImg={srcImg}
+        setResult={setSubImage1}
+        setFiles={setFiles}
+      />
+
+      <ImageCropperModal
+        isModalVisible={isModal2Visible}
+        setIsModalVisible={setIsModal2Visible}
+        //showModal={showModal}
+        srcImg={srcImg}
+        setResult={setPreviewImage}
+        setFiles={setFiles}
+      />
+
+      <ImageCropperModal
+        isModalVisible={isModal3Visible}
+        setIsModalVisible={setIsModal3Visible}
+        //showModal={showModal}
+        srcImg={srcImg}
+        setResult={setSubImage2}
+        setFiles={setFiles}
+      />
     </>
   )
 }

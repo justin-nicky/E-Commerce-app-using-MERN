@@ -124,7 +124,6 @@ export const getRestrictedSalesReport = asyncHandler(async (req, res) => {
   const { startDate, endDate } = req.params
   // startDate = startDate + ':00.000+00:00'
   // endDate = endDate + ':00.000+00:00'
-  console.log(startDate, endDate)
 
   const salesData = await Order.aggregate([
     {
@@ -137,6 +136,5 @@ export const getRestrictedSalesReport = asyncHandler(async (req, res) => {
       },
     },
   ])
-  console.log('salesData', salesData)
   res.json(salesData)
 })
