@@ -37,10 +37,9 @@ const userSchema = mongoose.Schema(
     },
     addresses: [addressSchema],
     defaultAddress: {
-      building: { type: String },
+      address: { type: String },
       city: { type: String },
       postalCode: { type: String },
-      state: { type: String },
       country: { type: String },
     },
   },

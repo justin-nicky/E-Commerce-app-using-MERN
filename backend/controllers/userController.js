@@ -179,6 +179,49 @@ const updateUser = asyncHandler(async (req, res, next) => {
   }
 })
 
+// @desc   add user address
+// @route  POST /api/users/address
+// @access Private
+const addAddress = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id)
+  if (user) {
+    console.log(req.body)
+    user.addresses.push({ ...req.body })
+    const updatedUser = await user.save()
+    res.json({
+      message: 'Address added successfully',
+    })
+  }
+})
+
+// @desc   fetch user address
+// @route  GET /api/users/address
+// @access Private
+const getAddresses = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id)
+  if (user) {
+    res.json({
+      addresses: [...user.addresses],
+    })
+  }
+})
+
+// @desc   delete a user address
+// @route  DELETE /api/users/address/:id
+// @access Private
+const deleteAddress = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id)
+  if (user) {
+    if (req.params.id > -1) {
+      user.addresses.splice(req.params.id, 1)
+    }
+    const updatedUser = await user.save()
+    res.json({
+      message: 'Address Deleted Successfully',
+    })
+  }
+})
+
 export {
   authUser,
   getUserProfile,
@@ -187,4 +230,7 @@ export {
   getAllUsers,
   updateUser,
   updateUserProfile,
+  addAddress,
+  getAddresses,
+  deleteAddress,
 }

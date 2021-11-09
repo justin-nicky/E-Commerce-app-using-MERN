@@ -112,90 +112,92 @@ const ProfileScreen = ({ location, history }) => {
   return (
     <Row>
       <Col md={3}>
-        <h2>User Profile</h2>
-        {message && <Message variant='danger'>{message}</Message>}
-        {success && <Message variant='success'>Profile Updated</Message>}
-        {loading ? (
-          <Loader />
-        ) : error ? (
-          <Message variant='danger'>{error}</Message>
-        ) : (
-          <Form onSubmit={submitHandler}>
-            <Form.Group
-              className='mb-3 fluid'
-              onInput={(e) => {
-                uploadImageHandler(e)
-              }}
-              style={{
-                cursor: 'pointer',
-              }}
-            >
-              <Form.Control
-                type='file'
-                accept='image/*'
-                id='imageInput'
-                hidden
-              />
-              {profileImageLoading ? (
-                <Loader />
-              ) : (
-                <Image
-                  src={profileImage}
-                  alt='image'
-                  rounded
-                  fluid
-                  onClick={() => {
-                    document.getElementById('imageInput').click()
-                  }}
+        <Row>
+          <h2>User Profile</h2>
+          {message && <Message variant='danger'>{message}</Message>}
+          {success && <Message variant='success'>Profile Updated</Message>}
+          {loading ? (
+            <Loader />
+          ) : error ? (
+            <Message variant='danger'>{error}</Message>
+          ) : (
+            <Form onSubmit={submitHandler}>
+              <Form.Group
+                className='mb-3 fluid'
+                onInput={(e) => {
+                  uploadImageHandler(e)
+                }}
+                style={{
+                  cursor: 'pointer',
+                }}
+              >
+                <Form.Control
+                  type='file'
+                  accept='image/*'
+                  id='imageInput'
+                  hidden
                 />
-              )}
-            </Form.Group>
+                {profileImageLoading ? (
+                  <Loader />
+                ) : (
+                  <Image
+                    src={profileImage}
+                    alt='image'
+                    rounded
+                    fluid
+                    onClick={() => {
+                      document.getElementById('imageInput').click()
+                    }}
+                  />
+                )}
+              </Form.Group>
 
-            <Form.Group controlId='name'>
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type='name'
-                placeholder='Enter name'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+              <Form.Group controlId='name'>
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type='name'
+                  placeholder='Enter name'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
 
-            <Form.Group controlId='email'>
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
-                type='email'
-                placeholder='Enter email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+              <Form.Group controlId='email'>
+                <Form.Label>Email Address</Form.Label>
+                <Form.Control
+                  type='email'
+                  placeholder='Enter email'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
 
-            <Form.Group controlId='password'>
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type='password'
-                placeholder='Enter password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+              <Form.Group controlId='password'>
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                  type='password'
+                  placeholder='Enter password'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
 
-            <Form.Group controlId='confirmPassword'>
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type='password'
-                placeholder='Confirm password'
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
+              <Form.Group controlId='confirmPassword'>
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                  type='password'
+                  placeholder='Confirm password'
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
 
-            <Button type='submit' variant='primary' className='m-2 '>
-              Update
-            </Button>
-          </Form>
-        )}
+              <Button type='submit' variant='primary' className='m-2 '>
+                Update
+              </Button>
+            </Form>
+          )}
+        </Row>
       </Col>
       <Col md={9}>
         <h2>My Orders</h2>

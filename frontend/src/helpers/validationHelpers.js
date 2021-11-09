@@ -125,3 +125,40 @@ export const passwordInputChangeHandler = (password, passwordError) => {
     return ''
   }
 }
+
+// #################### Validating Address or similar stuff! ###########################
+
+// @desc    handles address input blur event
+// @params  event object
+// @returns error string, null if no error
+export const addressInputBlurHandler = (name) => {
+  if (name === '') {
+    return 'This field cannot be empty!'
+  } else if (name.length < 4) {
+    return 'This field should have atleast 4 charecters.'
+  } else if (name.slice(-1) === ' ') {
+    return 'This field should not end with space.'
+  } else {
+    return null
+  }
+}
+
+// @desc    handles address input change event
+// @params  event object, error string
+// @returns error string, null if no error
+export const addressInputChangeHandler = (name, nameError) => {
+  if (name.length === 0) {
+    return null
+  } else if (name.charAt(0) === ' ') {
+    return 'should not start with space.'
+  } else if (name.includes('  ')) {
+    return 'should not contain consecutive spaces.'
+  }
+  //  if (
+  //   nameError === 'Name should not start with space.' ||
+  //   nameError === 'Name should not contain consecutive spaces.' ||
+  // )
+  else {
+    return null
+  }
+}
