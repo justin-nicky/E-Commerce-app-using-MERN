@@ -39,7 +39,11 @@ const getProductById = asyncHandler(async (req, res) => {
     // }
     res.json({
       ...product._doc,
-      categoryDiscount1: product.categoryDiscount.discount,
+      categoryDiscount1: product.categoryDiscount
+        ? product.categoryDiscount.discount
+          ? product.categoryDiscount.discount
+          : 0
+        : 0,
     })
   } else {
     res.status(404)
@@ -79,6 +83,7 @@ const createProduct = asyncHandler(async (req, res) => {
     numReviews: 0,
     discount: 0,
     description: 'Sample description',
+    categoryDiscount: null,
   })
   const createdProduct = await product.save()
   res.status(201).json({ product: createdProduct })

@@ -342,7 +342,7 @@ const OrderScreen = ({ match, history }) => {
                     </Button>
                   </ListGroup.Item>
                 )}
-              {['Shipped', 'Placed'].includes(order.status) &&
+              {['Shipped', 'Placed', 'Pending'].includes(order.status) &&
                 userInfo &&
                 !userInfo.isAdmin && (
                   <ListGroup.Item>
@@ -366,11 +366,13 @@ const OrderScreen = ({ match, history }) => {
                         setStatus(e.target.value)
                       }}
                     >
-                      {['Placed', 'Shipped', 'Delivered'].map((state) => (
-                        <option key={state} value={state}>
-                          {state}
-                        </option>
-                      ))}
+                      {['Pending', 'Placed', 'Shipped', 'Delivered'].map(
+                        (state) => (
+                          <option key={state} value={state}>
+                            {state}
+                          </option>
+                        )
+                      )}
                     </Form.Control>
                   </ListGroup.Item>
                 )}

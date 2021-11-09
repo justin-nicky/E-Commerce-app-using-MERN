@@ -9,6 +9,12 @@ import Center from '../Components/Center'
 import FormContainer from '../Components/FormContainer'
 import { createCategory, listCategories } from '../actions/categoryActions'
 import { CATEGORY_CREATE_RESET } from '../constants/categoryConstants'
+import {
+  nameInputBlurHandler,
+  nameInputChangeHandler,
+  percentageInputBlurHandler,
+  percentageInputChangeHandler,
+} from '../helpers/validationHelpers'
 
 const CategoryManage = ({ history }) => {
   const [_category, set_category] = useState('')
@@ -17,6 +23,11 @@ const CategoryManage = ({ history }) => {
     category: '',
     discount: 0,
   })
+  // error message states
+  const [errorCategory, seteErrorCategory] = useState('')
+  const [errorSubCategory, seteErrorSubCategory] = useState('')
+  const [errorDiscountCategory, seteErrorDiscountCategory] = useState('')
+  const [errorDiscountPercentage, seteErrorDiscountPercentage] = useState('')
 
   const dispatch = useDispatch()
 
@@ -49,21 +60,38 @@ const CategoryManage = ({ history }) => {
     }
   }, [dispatch, history, userInfo, createSuccess, categories])
 
-  const createCategoryHandler = () => {
-    if ((_category !== _subCategory) !== '') {
+  const createCategoryHandler = (e) => {
+    e.preventDefault()
+    nameInputBlurHandler(_category, seteErrorCategory)
+    percentageInputBlurHandler(_subCategory, seteErrorSubCategory)
+    if (errorCategory !== '' || errorSubCategory !== '') {
       dispatch(createCategory(_category, _subCategory))
       set_category('')
       set_subCategory('')
     }
   }
 
-  const updateCouponDiscountHandler = async () => {
+  const updateCouponDiscountHandler = async (e) => {
+    e.preventDefault()
     const config = { headers: { Authorization: `Bearer ${userInfo.token}` } }
-    const result = await axios.put(
-      `/api/categories/${updateCouponForm.category}`,
-      { discount: updateCouponForm.discount },
-      config
+    percentageInputBlurHandler(
+      updateCouponForm.discount,
+      seteErrorDiscountPercentage
     )
+    if (updateCouponForm.category === '')
+      seteErrorDiscountCategory('Choose a category')
+
+    if (errorDiscountPercentage === '' && errorDiscountCategory === '') {
+      try {
+        await axios.put(
+          `/api/categories/${updateCouponForm.category}`,
+          { discount: updateCouponForm.discount },
+          config
+        )
+      } catch (error) {
+        console.log(error)
+      }
+    }
     dispatch(listCategories())
   }
 
@@ -87,8 +115,21 @@ const CategoryManage = ({ history }) => {
                         type='text'
                         placeholder='Enter Category'
                         value={_category}
-                        onChange={(e) => set_category(e.target.value)}
+                        onChange={(e) => {
+                          set_category(e.target.value)
+                          nameInputChangeHandler(
+                            e.target.value,
+                            seteErrorCategory
+                          )
+                        }}
+                        onBlur={(e) => {
+                          nameInputBlurHandler(
+                            e.target.value,
+                            seteErrorCategory
+                          )
+                        }}
                       ></Form.Control>
+                      <span className='text-danger'>{errorCategory}</span>
                     </Form.Group>
 
                     <Form.Group controlId='subCagtegory'>
@@ -97,8 +138,21 @@ const CategoryManage = ({ history }) => {
                         type='text'
                         placeholder='Enter subCategory'
                         value={_subCategory}
-                        onChange={(e) => set_subCategory(e.target.value)}
+                        onChange={(e) => {
+                          set_subCategory(e.target.value)
+                          nameInputChangeHandler(
+                            e.target.value,
+                            seteErrorSubCategory
+                          )
+                        }}
+                        onBlur={(e) => {
+                          nameInputBlurHandler(
+                            e.target.value,
+                            seteErrorSubCategory
+                          )
+                        }}
                       ></Form.Control>
+                      <span className='text-danger'>{errorSubCategory}</span>
                     </Form.Group>
 
                     <Button type='submit' variant='primary' className='m-3'>
@@ -125,6 +179,7 @@ const CategoryManage = ({ history }) => {
                             ...updateCouponForm,
                             category: e.target.value,
                           })
+                          seteErrorDiscountCategory('')
                         }}
                         className='form-control'
                       >
@@ -138,6 +193,9 @@ const CategoryManage = ({ history }) => {
                           </option>
                         ))}
                       </select>
+                      <span className='text-danger'>
+                        {errorDiscountCategory}
+                      </span>
                     </Form.Group>
                   )}
                   <Form.Group controlId='discount' className='mt-3'>
@@ -146,13 +204,26 @@ const CategoryManage = ({ history }) => {
                       type='number'
                       placeholder='Enter discount percentage'
                       value={updateCouponForm.discount}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         setUpdateCouponForm({
                           ...updateCouponForm,
                           discount: e.target.value,
                         })
-                      }
+                        percentageInputChangeHandler(
+                          e.target.value,
+                          seteErrorDiscountPercentage
+                        )
+                      }}
+                      onBlur={(e) => {
+                        percentageInputBlurHandler(
+                          e.target.value,
+                          seteErrorDiscountPercentage
+                        )
+                      }}
                     ></Form.Control>
+                    <span className='text-danger'>
+                      {errorDiscountPercentage}
+                    </span>
                   </Form.Group>
 
                   <Button type='submit' variant='primary' className='m-3'>

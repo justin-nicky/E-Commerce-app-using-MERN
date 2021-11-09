@@ -3,43 +3,42 @@
 // #################### Validating Name! ###########################
 
 // @desc    handles name input blur event
-// @params  event object
-// @returns error string, null if no error
-export const nameInputBlurHandler = (name) => {
+// @params  value, error state setter
+// @returns nothing
+export const nameInputBlurHandler = (name, setError) => {
   if (name === '') {
-    return 'This field cannot be empty!'
+    setError('This field cannot be empty!')
   } else if (name.length < 4) {
-    return 'Name should have atleast 4 charecters.'
+    setError('This field should have atleast 4 charecters.')
   } else if (name.slice(-1) === ' ') {
-    return 'Name should not end with space.'
+    setError('should not end with space.')
   } else {
-    return null
+    setError('')
   }
 }
 
 // @desc    handles name input change event
-// @params  event object, error string
-// @returns error string, null if no error
-export const nameInputChangeHandler = (name, nameError) => {
+// @params  value, error state setter
+// @returns nothing
+export const nameInputChangeHandler = (name, setError) => {
   if (name.length === 0) {
-    return null
+    setError('This field cannot be empty!')
   } else if (name.charAt(0) === ' ') {
-    return 'Name should not start with space.'
+    setError('should not start with space.')
   } else if (name.includes('  ')) {
-    return 'Name should not contain consecutive spaces.'
+    setError('should not contain consecutive spaces.')
   } else if (/\d/.test(name)) {
-    return 'Name should not contain numbers.'
+    setError('should not contain numbers.')
   } else if (!name.match(/^[a-zA-Z ]+$/)) {
-    return 'Invalid charecter!'
-  }
-  //  if (
-  //   nameError === 'Name should not contain numbers.' ||
-  //   nameError === 'Name should not start with space.' ||
-  //   nameError === 'Name should not contain consecutive spaces.' ||
-  //   nameError === 'Invalid charecter!'
-  // )
-  else {
-    return null
+    setError('Invalid charecter!')
+  } else if (name === '') {
+    setError('This field cannot be empty!')
+  } else if (name.length < 4) {
+    setError('This field should have atleast 4 charecters.')
+  } else if (name.slice(-1) === ' ') {
+    setError('should not end with space.')
+  } else {
+    setError('')
   }
 }
 
@@ -129,36 +128,129 @@ export const passwordInputChangeHandler = (password, passwordError) => {
 // #################### Validating Address or similar stuff! ###########################
 
 // @desc    handles address input blur event
-// @params  event object
-// @returns error string, null if no error
-export const addressInputBlurHandler = (name) => {
-  if (name === '') {
-    return 'This field cannot be empty!'
-  } else if (name.length < 4) {
-    return 'This field should have atleast 4 charecters.'
-  } else if (name.slice(-1) === ' ') {
-    return 'This field should not end with space.'
+// @params  event object, error state setter
+// @returns no return value
+export const addressInputBlurHandler = (value, setError) => {
+  if (value === '') {
+    setError('This field cannot be empty!')
+  } else if (value.length < 4) {
+    setError('This field should have atleast 4 charecters.')
+  } else if (value.slice(-1) === ' ') {
+    setError('This field should not end with space.')
   } else {
-    return null
+    setError('')
   }
 }
 
 // @desc    handles address input change event
-// @params  event object, error string
-// @returns error string, null if no error
-export const addressInputChangeHandler = (name, nameError) => {
-  if (name.length === 0) {
-    return null
-  } else if (name.charAt(0) === ' ') {
-    return 'should not start with space.'
-  } else if (name.includes('  ')) {
-    return 'should not contain consecutive spaces.'
+// @params  value, error state setter
+// @returns no return value
+export const addressInputChangeHandler = (value, setError) => {
+  if (value.length === 0) {
+    setError('')
+  } else if (value.charAt(0) === ' ') {
+    setError('should not start with space.')
+  } else if (value.length < 4) {
+    setError('This field should have atleast 4 charecters.')
+  } else if (value.includes('  ')) {
+    setError('should not contain consecutive spaces.')
+  } else if (value.slice(-1) === ' ') {
+    setError('This field should not end with space.')
+  } else {
+    setError('')
   }
-  //  if (
-  //   nameError === 'Name should not start with space.' ||
-  //   nameError === 'Name should not contain consecutive spaces.' ||
-  // )
+}
+
+//######################### Validating Postal Code! ###########################
+
+// @desc    handles postal code(or any 6 digit number) input change event
+// @params  postal code, error state setter
+// @returns nothing
+export const postalCodeInputBlurHandler = (postalCode, setError) => {
+  if (postalCode === '') {
+    setError('This field cannot be empty!')
+  } else if (postalCode.length !== 6) {
+    setError('Postal Code should have 6 digits')
+  } else {
+    setError('')
+  }
+}
+
+// @desc    handles postal code input blur event
+// @params  postal code, error state setter
+// @returns nothing
+export const postalCodeInputChangeHandler = (postalCode, setError) => {
+  if (postalCode === '') {
+    setError('This field cannot be empty!')
+  } else if (!postalCode.match(/^\d{6}$/) && postalCode !== '') {
+    setError('Enter numbers only!')
+  } else if (postalCode.length > 6) {
+    setError('postalCode should not have more than 6 digits')
+  } else {
+    setError('')
+  }
+}
+
+//######################### Validating Prices! ###########################
+
+// @desc    handles Price (or similar values) input change event
+// @params  price, error state setter
+// @returns nothing
+export const priceInputBlurHandler = (price, setError) => {
+  if (price === '') {
+    setError('This field cannot be empty!')
+  } else if (Number(price) < 0) {
+    setError('Negative numbers are not allowed')
+  }
+  // else if (!price.match(/^\d+(,\d{1,2})?$/)) {
+  //   setError('Enter a valid number!')
+  // }
   else {
-    return null
+    setError('')
+  }
+}
+
+// @desc    handles price input blur event
+// @params  price, error state setter
+// @returns nothing
+export const priceInputChangeHandler = (price, setError) => {
+  if (price === '') {
+    setError('This field cannot be empty!')
+  } else if (!price.match(/^\d+(,\d{1,2})?$/)) {
+    setError('Enter a valid number!')
+  } else {
+    setError('')
+  }
+}
+
+//######################### Validating Percentages! ###########################
+
+// @desc    handles Percentages (0-100 without percent symbol) input change event
+// @params  percentage, error state setter
+// @returns nothing
+export const percentageInputBlurHandler = (percentage, setError) => {
+  if (percentage === '') {
+    setError('This field cannot be empty!')
+  } else if (Number(percentage) < 0) {
+    setError('Negative numbers are not allowed')
+  }
+  // else if (!percentage.match(/\\d+(?:\\.\\d+)?/)) {
+  //   setError('Enter a valid percentage!')
+  // }
+  else {
+    setError('')
+  }
+}
+
+// @desc    handles percentage input blur event
+// @params  percentage, error state setter
+// @returns nothing
+export const percentageInputChangeHandler = (percentage, setError) => {
+  if (percentage === '') {
+    setError('This field cannot be empty!')
+  } else if (!percentage.match(/\\d+(?:\\.\\d+)?/)) {
+    setError('Enter a valid percentage!')
+  } else {
+    setError('')
   }
 }

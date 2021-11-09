@@ -21,6 +21,14 @@ import { listCategories } from '../actions/categoryActions'
 import { PRODUCT_UPDATE_RESET } from '../constants/productConstants'
 import { fileUploadAndResize } from '../helpers/FileUpload'
 import ImageCropperModal from '../Components/ImageCropperModal'
+import {
+  nameInputBlurHandler,
+  nameInputChangeHandler,
+  priceInputBlurHandler,
+  priceInputChangeHandler,
+  percentageInputBlurHandler,
+  percentageInputChangeHandler,
+} from '../helpers/validationHelpers'
 
 const ProductEditScreen = ({ match, history }) => {
   const productId = match.params.id
@@ -42,14 +50,24 @@ const ProductEditScreen = ({ match, history }) => {
   const [uploading, setUploading] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState([])
   const [modal, setModal] = useState(false)
-  //   const [image, setImage] = useState(null);
-  //   const [crop, setCrop] = useState({ aspect: 1 / 1 });
   const [isModal1Visible, setIsModal1Visible] = useState(false)
   const [isModal2Visible, setIsModal2Visible] = useState(false)
   const [isModal3Visible, setIsModal3Visible] = useState(false)
   const [srcImg, setSrcImg] = useState(null)
-  const [result, setResult] = useState(null)
   const [files, setFiles] = useState(false)
+
+  // error messages
+  const [errorName, setErrorName] = useState('')
+  const [errorPrice, setErrorPrice] = useState('')
+  const [errorBrand, setErrorBrand] = useState('')
+  const [errorCountInStock, setErrorCountInStock] = useState('')
+  const [errorDiscount, setErrorDiscount] = useState('')
+  const [errorDescription, setErrorDescription] = useState('')
+  const [errorCategory, setErrorCategory] = useState('')
+  const [errorSubCategory, setErrorSubCategory] = useState('')
+  const [errorImg1, setErrorImg1] = useState('')
+  const [errorImg2, setErrorImg2] = useState('')
+  const [errorImg3, setErrorImg3] = useState('')
 
   const dispatch = useDispatch()
 
@@ -86,6 +104,15 @@ const ProductEditScreen = ({ match, history }) => {
     //else {
     if (!product || !product.name || product._id !== productId) {
       dispatch(listProductDetails(productId))
+    } else if (product.category === 'Sample category') {
+      setName('')
+      setPrice('')
+      setBrand('')
+      setCategory('')
+      setSubCategory('')
+      setCountInStock('')
+      setDescription('')
+      setDiscount('')
     } else {
       setName(product.name)
       setPrice(product.price)
@@ -210,18 +237,34 @@ const ProductEditScreen = ({ match, history }) => {
                 type='name'
                 placeholder='Enter name'
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value)
+                  nameInputChangeHandler(e.target.value, setErrorName)
+                }}
+                onBlur={(e) =>
+                  nameInputBlurHandler(e.target.value, setErrorName)
+                }
               ></Form.Control>
+              <span className='text-danger'>{errorName}</span>
             </Form.Group>
 
             <Form.Group controlId='price'>
               <Form.Label>Price</Form.Label>
               <Form.Control
                 type='number'
+                min='0'
                 placeholder='Enter price'
                 value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                onChange={(e) => {
+                  setPrice(e.target.value)
+                  priceInputChangeHandler(e.target.value, setErrorPrice)
+                }}
+                onBlur={(e) => {
+                  priceInputBlurHandler(e.target.value, setErrorPrice)
+                  setPrice(Math.abs(e.target.value))
+                }}
               ></Form.Control>
+              <span className='text-danger'>{errorPrice}</span>
             </Form.Group>
 
             <Form.Group controlId='image'>
@@ -231,6 +274,7 @@ const ProductEditScreen = ({ match, history }) => {
                   <Form.Group
                     className='mb-3 fluid'
                     onInput={(e) => {
+                      setErrorImg1('')
                       //uploadImageHandler(e, setSubImage1, setSub1Loading)
                       if (e.target.files.length > 0) {
                         setSrcImg(URL.createObjectURL(e.target.files[0]))
@@ -261,6 +305,7 @@ const ProductEditScreen = ({ match, history }) => {
                         }}
                       />
                     )}
+                    <span className='text-danger'>{errorImg1}</span>
                   </Form.Group>
                 </Col>
                 <Col md={4}>
@@ -272,6 +317,7 @@ const ProductEditScreen = ({ match, history }) => {
                       //     setPreviewImage,
                       //     setPreviewImageLoading
                       //
+                      setErrorImg2('')
                       if (e.target.files.length > 0) {
                         setSrcImg(URL.createObjectURL(e.target.files[0]))
                         // console.log(e.target.files[0]);
@@ -301,6 +347,7 @@ const ProductEditScreen = ({ match, history }) => {
                         }}
                       />
                     )}
+                    <span className='text-danger'>{errorImg2}</span>
                   </Form.Group>
                 </Col>
                 <Col md={4}>
@@ -308,6 +355,7 @@ const ProductEditScreen = ({ match, history }) => {
                     className='mb-3 fluid'
                     onInput={(e) => {
                       if (e.target.files.length > 0) {
+                        setErrorImg3('')
                         setSrcImg(URL.createObjectURL(e.target.files[0]))
                         // console.log(e.target.files[0]);
                         //set
@@ -337,6 +385,7 @@ const ProductEditScreen = ({ match, history }) => {
                         }}
                       />
                     )}
+                    <span className='text-danger'>{errorImg3}</span>
                   </Form.Group>
                 </Col>
               </Row>
@@ -348,8 +397,15 @@ const ProductEditScreen = ({ match, history }) => {
                 type='text'
                 placeholder='Enter brand'
                 value={brand}
-                onChange={(e) => setBrand(e.target.value)}
+                onChange={(e) => {
+                  setBrand(e.target.value)
+                  nameInputChangeHandler(e.target.value, setErrorBrand)
+                }}
+                onBlur={(e) =>
+                  nameInputBlurHandler(e.target.value, setErrorBrand)
+                }
               ></Form.Control>
+              <span className='text-danger'>{errorBrand}</span>
             </Form.Group>
 
             <Form.Group controlId='countInStock'>
@@ -358,17 +414,34 @@ const ProductEditScreen = ({ match, history }) => {
                 type='number'
                 placeholder='Enter countInStock'
                 value={countInStock}
-                onChange={(e) => setCountInStock(e.target.value)}
+                onChange={(e) => {
+                  setCountInStock(e.target.value)
+                  priceInputChangeHandler(e.target.value, setErrorCountInStock)
+                }}
+                onBlur={(e) =>
+                  priceInputBlurHandler(e.target.value, setErrorCountInStock)
+                }
               ></Form.Control>
+              <span className='text-danger'>{errorCountInStock}</span>
             </Form.Group>
 
             <Form.Group controlId='discount'>
               <Form.Label>Discount</Form.Label>
               <Form.Control
                 type='number'
+                min='0'
+                max='100'
                 placeholder='Enter Discount Percent'
                 value={discount}
-                onChange={(e) => setDiscount(e.target.value)}
+                onChange={(e) => {
+                  setDiscount(e.target.value)
+                  console.log(e.target.value)
+                  percentageInputChangeHandler(e.target.value, setErrorDiscount)
+                }}
+                onBlur={(e) => {
+                  percentageInputBlurHandler(e.target.value, setErrorDiscount)
+                  setDiscount(Math.abs(e.target.value))
+                }}
               ></Form.Control>
             </Form.Group>
 
@@ -376,6 +449,7 @@ const ProductEditScreen = ({ match, history }) => {
               <Form.Label>Description</Form.Label>
               <Form.Control
                 type='text'
+                required
                 placeholder='Enter description'
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -386,8 +460,14 @@ const ProductEditScreen = ({ match, history }) => {
               <Form.Label>Category</Form.Label>
               <select
                 aria-label='Default select example'
-                onChange={categorySelectHandler}
+                onChange={(e) => {
+                  categorySelectHandler(e)
+                  if (e.target.value !== '') {
+                    setErrorCategory('')
+                  }
+                }}
                 className='form-control'
+                required
               >
                 <option>{category}</option>
                 {categories.map((category) => (
@@ -396,14 +476,19 @@ const ProductEditScreen = ({ match, history }) => {
                   </option>
                 ))}
               </select>
+              <span className='text-danger'>{errorCategory}</span>
             </Form.Group>
 
             <Form.Group className='mb-3'>
               <Form.Label>Sub-category</Form.Label>
               <select
+                required
                 aria-label='Default select example'
                 onChange={(e) => {
                   setSubCategory(e.target.value)
+                  if (e.target.value !== '') {
+                    setErrorSubCategory('')
+                  }
                 }}
                 className='form-control'
               >
@@ -414,6 +499,7 @@ const ProductEditScreen = ({ match, history }) => {
                   </option>
                 ))}
               </select>
+              <span className='text-danger'>{errorSubCategory}</span>
             </Form.Group>
 
             <Center>
@@ -422,7 +508,39 @@ const ProductEditScreen = ({ match, history }) => {
                 variant='primary'
                 className='m-3'
                 onClick={() => {
-                  setModal(true)
+                  nameInputBlurHandler(name, setErrorName)
+                  priceInputBlurHandler(price, setErrorPrice)
+                  nameInputBlurHandler(brand, setErrorBrand)
+                  percentageInputBlurHandler(countInStock, setErrorCountInStock)
+                  percentageInputBlurHandler(discount, setErrorDiscount)
+                  if (description.length < 10)
+                    setErrorDescription(
+                      'Description must be at least 10 characters long'
+                    )
+                  if (category === '') setErrorCategory('Category is required')
+                  if (subCategory === '')
+                    setErrorSubCategory('Sub-category is required')
+                  if (subImage1 === ('' || '/imageplaceholder.png'))
+                    setErrorImg1('Image is required')
+                  if (previewImage === ('' || '/imageplaceholder.png'))
+                    setErrorImg2('Image is required')
+                  if (subImage2 === ('' || '/imageplaceholder.png'))
+                    setErrorImg3('Image is required')
+                  if (
+                    errorName !== '' &&
+                    errorPrice !== '' &&
+                    errorBrand !== '' &&
+                    errorCountInStock !== '' &&
+                    errorDiscount !== '' &&
+                    errorCategory !== '' &&
+                    errorSubCategory !== '' &&
+                    errorDescription !== '' &&
+                    errorImg1 !== '' &&
+                    errorImg2 !== '' &&
+                    errorImg3 !== ''
+                  ) {
+                    setModal(true)
+                  }
                 }}
               >
                 Update

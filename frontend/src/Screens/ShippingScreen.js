@@ -17,7 +17,11 @@ import Center from '../Components/Center'
 import {
   addressInputBlurHandler,
   addressInputChangeHandler,
-} from '../Helpers/validationHelpers'
+  nameInputChangeHandler,
+  nameInputBlurHandler,
+  postalCodeInputBlurHandler,
+  postalCodeInputChangeHandler,
+} from '../helpers/validationHelpers'
 
 const ShippingScreen = ({ history }) => {
   const cart = useSelector((state) => state.cart)
@@ -44,6 +48,13 @@ const ShippingScreen = ({ history }) => {
     country: '',
   })
 
+  //error messages
+  const [errorAddress, setErrorAddress] = useState('')
+  const [errorRadio, setErrorRadio] = useState('')
+  const [errorCity, setErrorCity] = useState('')
+  const [errorPostalCode, setErrorPostalCode] = useState('')
+  const [errorCountry, setErrorCountry] = useState('')
+
   const dispatch = useDispatch()
 
   const continueHandler = (e) => {
@@ -53,7 +64,7 @@ const ShippingScreen = ({ history }) => {
       dispatch(saveShippingAddress({ address, city, postalCode, country }))
       history.push('/payment')
     } else {
-      setError({ ...error, radio: 'Please select an address' })
+      setErrorRadio('Please select an address')
     }
   }
   useEffect(() => {
@@ -71,18 +82,44 @@ const ShippingScreen = ({ history }) => {
 
   const submitHandler = async () => {
     //e.preventDefault()
-    setModalShow(false)
-    const formData = {
-      address,
-      city,
-      postalCode,
-      country,
-    }
-    try {
-      await axios.post('/api/users/address', formData, config)
-      fetchAddresses()
-    } catch (error) {
-      console.error(error)
+    addressInputBlurHandler(address, setErrorAddress)
+    nameInputBlurHandler(city, setErrorCity)
+    postalCodeInputBlurHandler(postalCode, setErrorPostalCode)
+    nameInputBlurHandler(country, setErrorCountry)
+
+    if (
+      errorAddress === '' &&
+      errorRadio === '' &&
+      errorCity === '' &&
+      errorPostalCode === '' &&
+      errorCountry === ''
+    ) {
+      let isDuplicate = false
+      setModalShow(false)
+      addresses.forEach((_address) => {
+        if (
+          _address.address === address &&
+          _address.city === city &&
+          _address.postalCode === postalCode &&
+          _address.country === country
+        ) {
+          isDuplicate = true
+        }
+      })
+      if (!isDuplicate) {
+        const formData = {
+          address,
+          city,
+          postalCode,
+          country,
+        }
+        try {
+          await axios.post('/api/users/address', formData, config)
+          fetchAddresses()
+        } catch (error) {
+          console.error(error)
+        }
+      }
     }
   }
 
@@ -119,7 +156,7 @@ const ShippingScreen = ({ history }) => {
                     setPostalCode(address.postalCode)
                     setCountry(address.country)
                     setIndex(i)
-                    setError({ ...error, radio: '' })
+                    setErrorRadio('')
                   }}
                 ></input>
               </Col>
@@ -139,7 +176,7 @@ const ShippingScreen = ({ history }) => {
           <Button className='m-3 mt-5' type='submit'>
             Continue
           </Button>
-          <span className='text-danger text-small'>{error.radio}</span>
+          <span className='text-danger text-small'>{errorRadio}</span>
         </Form>
         <Button
           variant='secondary'
@@ -190,18 +227,13 @@ const ShippingScreen = ({ history }) => {
                   required
                   onChange={(e) => {
                     setAddress(e.target.value)
-                    setError({
-                      ...error,
-                      address: addressInputChangeHandler(e.target.value),
-                    })
+                    addressInputChangeHandler(e.target.value, setErrorAddress)
                   }}
                   onBlur={(e) => {
-                    setError({
-                      ...error,
-                      address: addressInputBlurHandler(e.target.value),
-                    })
+                    addressInputBlurHandler(e.target.value, setErrorAddress)
                   }}
                 ></Form.Control>
+                <span className='text-danger text-small'>{errorAddress}</span>
               </Form.Group>
 
               <Form.Group controlId='city'>
@@ -211,8 +243,15 @@ const ShippingScreen = ({ history }) => {
                   placeholder='Enter city'
                   value={city}
                   required
-                  onChange={(e) => setCity(e.target.value)}
+                  onChange={(e) => {
+                    setCity(e.target.value)
+                    nameInputChangeHandler(e.target.value, setErrorCity)
+                  }}
+                  onBlur={(e) => {
+                    nameInputBlurHandler(e.target.value, setErrorCity)
+                  }}
                 ></Form.Control>
+                <span className='text-danger text-small'>{errorCity}</span>
               </Form.Group>
 
               <Form.Group controlId='postalCode'>
@@ -222,8 +261,23 @@ const ShippingScreen = ({ history }) => {
                   placeholder='Enter postal code'
                   value={postalCode}
                   required
-                  onChange={(e) => setPostalCode(e.target.value)}
+                  onChange={(e) => {
+                    setPostalCode(e.target.value)
+                    postalCodeInputChangeHandler(
+                      e.target.value,
+                      setErrorPostalCode
+                    )
+                  }}
+                  onBlur={(e) => {
+                    postalCodeInputBlurHandler(
+                      e.target.value,
+                      setErrorPostalCode
+                    )
+                  }}
                 ></Form.Control>
+                <span className='text-danger text-small'>
+                  {errorPostalCode}
+                </span>
               </Form.Group>
 
               <Form.Group controlId='country'>
@@ -233,8 +287,15 @@ const ShippingScreen = ({ history }) => {
                   placeholder='Enter country'
                   value={country}
                   required
-                  onChange={(e) => setCountry(e.target.value)}
+                  onChange={(e) => {
+                    setCountry(e.target.value)
+                    nameInputChangeHandler(e.target.value, setErrorCountry)
+                  }}
+                  onBlur={(e) => {
+                    nameInputBlurHandler(e.target.value, setErrorCountry)
+                  }}
                 ></Form.Control>
+                <span className='text-danger text-small'>{errorCountry}</span>
               </Form.Group>
 
               <Button type='submit' variant='primary' className='my-3'>

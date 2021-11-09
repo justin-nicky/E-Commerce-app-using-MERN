@@ -39,6 +39,7 @@ export const addOrderItems = asyncHandler(async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice,
+      status: paymentMethod === 'COD' ? 'Placed' : 'Pending',
     })
 
     const createdOrder = await order.save()
@@ -70,6 +71,7 @@ export const updateOrderToPaid = asyncHandler(async (req, res) => {
   if (order) {
     order.isPaid = true
     order.paidAt = Date.now()
+    order.status = order.status === 'Pending' ? 'Placed' : order.status
     const updatedOrder = await order.save()
     res.json(updatedOrder)
   } else {

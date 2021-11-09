@@ -10,9 +10,19 @@ import { COUPON_ADD_RESET } from '../constants/couponsConstants'
 import Loader from '../Components/Loader'
 import Message from '../Components/Message'
 import Center from '../Components/Center'
+import {
+  nameInputBlurHandler,
+  nameInputChangeHandler,
+  percentageInputBlurHandler,
+  percentageInputChangeHandler,
+} from '../helpers/validationHelpers'
 
 const CouponManage = () => {
   const [modal, setModal] = useState({ code: null, show: false })
+  // error message states
+  const [errorCouponCode, setErrorCouponCode] = useState('')
+  const [errorDiscountPercentage, setErrorDiscountPercentage] = useState('')
+  const [errorDate, setErrorDate] = useState('')
 
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
@@ -54,7 +64,13 @@ const CouponManage = () => {
 
   const addCouponHandler = (e) => {
     e.preventDefault()
-    dispatch(createCoupon(formData))
+    nameInputBlurHandler(formData.code, setErrorCouponCode)
+    percentageInputBlurHandler(formData.discount, setErrorDiscountPercentage)
+    if (formData.expiryDate === '') {
+      setErrorDate('Expiry date is required')
+    } else {
+      dispatch(createCoupon(formData))
+    }
   }
 
   const deleteCouponHandler = (code) => {
@@ -80,8 +96,13 @@ const CouponManage = () => {
                     placeholder='Enter Code'
                     onChange={(e) => {
                       setFormData({ ...formData, code: e.target.value })
+                      nameInputChangeHandler(e.target.value, setErrorCouponCode)
+                    }}
+                    onBlur={(e) => {
+                      nameInputBlurHandler(e.target.value, setErrorCouponCode)
                     }}
                   />
+                  <span className='text-danger'>{errorCouponCode}</span>
                 </Form.Group>
 
                 <Form.Group className='mb-3' controlId='formBasicNumber'>
@@ -90,21 +111,35 @@ const CouponManage = () => {
                     type='Number'
                     required
                     placeholder='Discount'
+                    value={formData.discount}
                     onChange={(e) => {
                       setFormData({ ...formData, discount: e.target.value })
+                      percentageInputChangeHandler(
+                        e.target.value,
+                        setErrorDiscountPercentage
+                      )
+                    }}
+                    onBlur={(e) => {
+                      percentageInputBlurHandler(
+                        e.target.value,
+                        setErrorDiscountPercentage
+                      )
                     }}
                   />
+                  <span className='text-danger'>{errorDiscountPercentage}</span>
                 </Form.Group>
                 <Form.Group className='mb-3' controlId='formBasicDate'>
                   <Form.Label>Expiry Date: </Form.Label>
                   <input
                     type='datetime-local'
                     required
+                    min={new Date().toISOString().split('.')[0]}
                     className='mx-3 '
                     onChange={(e) => {
                       setFormData({ ...formData, expiryDate: e.target.value })
                     }}
                   ></input>
+                  <span className='text-danger'>{errorDate}</span>
                 </Form.Group>
                 <Button
                   variant='primary'
