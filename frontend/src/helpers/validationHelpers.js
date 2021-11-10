@@ -45,31 +45,31 @@ export const nameInputChangeHandler = (name, setError) => {
 // #################### Validating Email! ###########################
 
 // @desc    handles email input blur event
-// @params  event object
-// @returns error string, null if no error
-export const emailInputBlurHandler = (email) => {
+// @params  email, error state setter
+// @returns nothing
+export const emailInputBlurHandler = (email, setError) => {
   if (email === '') {
-    return 'This field cannot be empty!'
+    setError('This field cannot be empty!')
   } else if (!email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
-    return 'This email id is not valid.'
+    setError('This email id is not valid.')
   } else {
-    return null
+    setError('')
   }
 }
 
 // @desc    handles email input change event
-// @params  event object, error string
-// @returns error string, null if no error
-export const emailInputChangeHandler = (email, emailError) => {
+// @params  email, error setter
+// @returns nothing
+export const emailInputChangeHandler = (email, setError) => {
   if (email.includes(' ')) {
-    return 'Email id should not contain space.'
+    setError('Email id should not contain space.')
   }
   // if (
   //   emailError === 'Email id should not contain space.' ||
   //   email.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)
   // )
   else {
-    return null
+    setError('')
   }
 }
 
@@ -105,23 +105,29 @@ export const phoneInputChangeHandler = (phone, phoneError) => {
 
 //######################### Validating Password! ###########################
 
-export const passwordInputBlurHandler = (password) => {
+// @desc    handles password input blur event
+// @params  password, error setter
+// @returns nothing
+export const passwordInputBlurHandler = (password, setError) => {
   if (password === '') {
-    return 'This field cannot be empty!'
+    setError('This field cannot be empty!')
   } else if (password.length < 5) {
-    return 'password should have atleast 5 charecters'
+    setError('password should have atleast 5 charecters')
   } else if (password.length > 20) {
-    return 'password should not exceed 20 characters'
+    setError('password should not exceed 20 characters')
   } else {
-    return ''
+    setError('')
   }
 }
 
-export const passwordInputChangeHandler = (password, passwordError) => {
+// @desc    handles password input change event
+// @params  password, error setter
+// @returns nothing
+export const passwordInputChangeHandler = (password, setError) => {
   if (password.length > 20) {
-    return 'password should not exceed 20 characters'
+    setError('password should not exceed 20 characters')
   } else {
-    return ''
+    setError('')
   }
 }
 

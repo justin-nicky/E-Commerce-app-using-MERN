@@ -7,6 +7,14 @@ import Loader from '../Components/Loader'
 import { getUserDetails, updateUserProfile } from '../actions/userActions'
 import { listMyOrders } from '../actions/orderActions'
 import { fileUploadAndResize } from '../helpers/FileUpload'
+import {
+  nameInputChangeHandler,
+  nameInputBlurHandler,
+  emailInputChangeHandler,
+  emailInputBlurHandler,
+  passwordInputChangeHandler,
+  passwordInputBlurHandler,
+} from '../helpers/validationHelpers'
 //import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 
 const ProfileScreen = ({ location, history }) => {
@@ -17,6 +25,11 @@ const ProfileScreen = ({ location, history }) => {
   const [message, setMessage] = useState(null)
   const [profileImage, setProfileImage] = useState('user2.png')
   const [profileImageLoading, setProfileImageLoading] = useState(false)
+  // error message states
+  const [nameError, setNameError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = useState('')
 
   const dispatch = useDispatch()
 
@@ -67,9 +80,24 @@ const ProfileScreen = ({ location, history }) => {
 
   const submitHandler = (e) => {
     e.preventDefault()
-    if (password !== confirmPassword) {
-      setMessage('Passwords do not match')
+    nameInputBlurHandler(name, setNameError)
+    emailInputBlurHandler(email, setEmailError)
+    if (password !== '') {
+      passwordInputBlurHandler(password, setPasswordError)
+      passwordInputBlurHandler(confirmPassword, setConfirmPasswordError)
     } else {
+      setPasswordError('')
+      setConfirmPasswordError('')
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('Passwords do not match')
+    } else if (
+      nameError === '' &&
+      emailError === '' &&
+      passwordError === '' &&
+      confirmPasswordError === ''
+    ) {
       dispatch(
         updateUserProfile({ id: user._id, name, email, password, profileImage })
       )
@@ -158,8 +186,15 @@ const ProfileScreen = ({ location, history }) => {
                   type='name'
                   placeholder='Enter name'
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => {
+                    setName(e.target.value)
+                    nameInputChangeHandler(e.target.value, setNameError)
+                  }}
+                  onBlur={(e) => {
+                    nameInputBlurHandler(e.target.value, setNameError)
+                  }}
                 ></Form.Control>
+                <span className='text-danger'>{nameError}</span>
               </Form.Group>
 
               <Form.Group controlId='email'>
@@ -168,8 +203,15 @@ const ProfileScreen = ({ location, history }) => {
                   type='email'
                   placeholder='Enter email'
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    emailInputChangeHandler(e.target.value, setEmailError)
+                  }}
+                  onBlur={(e) => {
+                    emailInputBlurHandler(e.target.value, setEmailError)
+                  }}
                 ></Form.Control>
+                <span className='text-danger'>{emailError}</span>
               </Form.Group>
 
               <Form.Group controlId='password'>
@@ -178,8 +220,15 @@ const ProfileScreen = ({ location, history }) => {
                   type='password'
                   placeholder='Enter password'
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    // passwordInputChangeHandler(e.target.value, setPasswordError)
+                  }}
+                  // onBlur={(e) => {
+                  //   passwordInputBlurHandler(e.target.value, setPasswordError)
+                  // }}
                 ></Form.Control>
+                <span className='text-danger'>{passwordError}</span>
               </Form.Group>
 
               <Form.Group controlId='confirmPassword'>
@@ -188,8 +237,21 @@ const ProfileScreen = ({ location, history }) => {
                   type='password'
                   placeholder='Confirm password'
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value)
+                    // passwordInputChangeHandler(
+                    //   e.target.value,
+                    //   setConfirmPasswordError
+                    // )
+                  }}
+                  // onBlur={(e) => {
+                  //   passwordInputBlurHandler(
+                  //     e.target.value,
+                  //     setConfirmPasswordError
+                  //   )
+                  // }}
                 ></Form.Control>
+                <span className='text-danger'>{confirmPasswordError}</span>
               </Form.Group>
 
               <Button type='submit' variant='primary' className='m-2 '>
