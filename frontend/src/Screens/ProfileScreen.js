@@ -12,7 +12,6 @@ import {
   nameInputBlurHandler,
   emailInputChangeHandler,
   emailInputBlurHandler,
-  passwordInputChangeHandler,
   passwordInputBlurHandler,
 } from '../helpers/validationHelpers'
 //import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'

@@ -1,8 +1,10 @@
 import React from 'react'
+import { Route } from 'react-router-dom'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../actions/userActions'
+import SearchBox from './SearchBox'
 
 const Header = () => {
   const userLogin = useSelector((state) => state.userLogin)
@@ -55,10 +57,13 @@ const Header = () => {
           ) : (
             <>
               <LinkContainer to='/'>
-                <Navbar.Brand>PROSHOP</Navbar.Brand>
+                <Navbar.Brand className='pe-3'>PROSHOP</Navbar.Brand>
               </LinkContainer>
               <Navbar.Toggle aria-controls='basic-navbar-nav' />
               <Navbar.Collapse id='basic-navbar-nav'>
+                <Route
+                  render={({ history }) => <SearchBox history={history} />}
+                />
                 <Nav className='ms-auto'>
                   <LinkContainer to='/cart'>
                     <Nav.Link>
