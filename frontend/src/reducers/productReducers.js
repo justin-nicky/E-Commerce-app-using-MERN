@@ -17,6 +17,9 @@ import {
   PRODUCT_UPDATE_SUCCESS,
   PRODUCT_UPDATE_FAIL,
   PRODUCT_UPDATE_RESET,
+  PRODUCT_TOP_RATED_REQUEST,
+  PRODUCT_TOP_RATED_SUCCESS,
+  PRODUCT_TOP_RATED_FAIL,
 } from '../constants/productConstants'
 import { logout } from '../actions/userActions'
 
@@ -87,6 +90,19 @@ export const productUpdateReducer = (state = { product: {} }, action) => {
       return { loading: false, error: action.payload }
     case PRODUCT_UPDATE_RESET:
       return { product: {} }
+    default:
+      return state
+  }
+}
+
+export const productTopRatedReducer = (state = { products: [] }, action) => {
+  switch (action.type) {
+    case PRODUCT_TOP_RATED_REQUEST:
+      return { loading: true, products: [] }
+    case PRODUCT_TOP_RATED_SUCCESS:
+      return { loading: false, products: action.payload }
+    case PRODUCT_TOP_RATED_FAIL:
+      return { loading: false, error: action.payload }
     default:
       return state
   }

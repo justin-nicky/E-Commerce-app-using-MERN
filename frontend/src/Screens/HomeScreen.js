@@ -6,6 +6,7 @@ import { useEffect } from 'react'
 import { listProducts } from '../actions/productActions'
 import Loader from '../Components/Loader'
 import Message from '../Components/Message'
+import ProductCarousel from '../Components/ProductCarousel'
 
 const HomeScreen = ({ history, match }) => {
   const keyword = match.params.keyword
@@ -20,6 +21,7 @@ const HomeScreen = ({ history, match }) => {
 
   return (
     <>
+      {!keyword && <ProductCarousel />}
       <h3>Latest products</h3>
 
       {loading ? (
