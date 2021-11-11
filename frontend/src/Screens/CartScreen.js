@@ -64,8 +64,6 @@ const CartScreen = ({ match, location, history }) => {
                     </Link>
                   </Col>
 
-                  {/* { <Col md={2}>₹ {_item.price}</Col>} */}
-
                   {_item.discount > 0 || _item.categoryDiscount1 > 0 ? (
                     <Col>
                       ₹{' '}

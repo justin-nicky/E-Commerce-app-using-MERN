@@ -81,7 +81,6 @@ const ShippingScreen = ({ history }) => {
   }
 
   const submitHandler = async () => {
-    //e.preventDefault()
     addressInputBlurHandler(address, setErrorAddress)
     nameInputBlurHandler(city, setErrorCity)
     postalCodeInputBlurHandler(postalCode, setErrorPostalCode)

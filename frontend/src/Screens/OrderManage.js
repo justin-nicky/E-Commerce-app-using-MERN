@@ -10,19 +10,11 @@ import Center from '../Components/Center'
 const OrderManage = ({ history }) => {
   const dispatch = useDispatch()
 
-  // const userList = useSelector((state) => state.userList)
-  // const { loading, error, users } = userList
-
   const userLogin = useSelector((state) => state.userLogin)
   const { userInfo } = userLogin
 
   const orderList = useSelector((state) => state.orderList)
   const { loading, orders, error } = orderList
-
-  // const toggleEnableDisable = (id, disable) => {
-  //   dispatch(disableUser(id, disable))
-  //   //getUsers()
-  // }
 
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {

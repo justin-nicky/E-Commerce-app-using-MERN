@@ -73,16 +73,6 @@ const AdminDashboard = () => {
       </PDFDownloadLink>
     )
   }
-  const downloadSalesReport = () => {
-    return (
-      <PDFDownloadLink
-        document={<SalesReport orders={salesReportInARange} />}
-        fileName={`Sales Report.pdf`}
-      >
-        Download Report
-      </PDFDownloadLink>
-    )
-  }
 
   const fetchSalesReport = async (startDate, endDate) => {
     //fetch sales report in a range
@@ -110,12 +100,7 @@ const AdminDashboard = () => {
                   md={3}
                   className='d-block align-items-center justify-content-center'
                 >
-                  <Image
-                    src='/rupee.png'
-                    roundedCircle
-                    fluid
-                    //className='d-block align-items-center justify-content-center'
-                  />
+                  <Image src='/rupee.png' roundedCircle fluid />
                 </Col>
                 <Col md={9}>
                   <Card.Title>Total Sales</Card.Title>
@@ -131,12 +116,7 @@ const AdminDashboard = () => {
                   md={3}
                   className='d-block align-items-center justify-content-center'
                 >
-                  <Image
-                    src='/delivery-van.png'
-                    roundedCircle
-                    fluid
-                    //className='d-block align-items-center justify-content-center'
-                  />
+                  <Image src='/delivery-van.png' roundedCircle fluid />
                 </Col>
                 <Col md={9}>
                   <Card.Title>Total Orders</Card.Title>
@@ -152,11 +132,7 @@ const AdminDashboard = () => {
                   md={3}
                   className='d-block align-items-center justify-content-center'
                 >
-                  <Image
-                    src='/product.png'
-                    fluid
-                    //className='d-block align-items-center justify-content-center'
-                  />
+                  <Image src='/product.png' fluid />
                 </Col>
                 <Col md={9}>
                   <Card.Title>Total Products</Card.Title>
@@ -174,11 +150,7 @@ const AdminDashboard = () => {
                       md={3}
                       className='d-block align-items-center justify-content-center'
                     >
-                      <Image
-                        src='/usericon.png'
-                        fluid
-                        //className='d-block align-items-center justify-content-center'
-                      />
+                      <Image src='/usericon.png' fluid />
                     </Col>
                     <Col md={9}>
                       <Card.Title>Total Users</Card.Title>
@@ -259,7 +231,6 @@ const AdminDashboard = () => {
                 className='mx-3 '
                 max={new Date().toISOString().split('.')[0]}
                 onChange={(e) => {
-                  //setFormData({ ...formData, expiryDate: e.target.value })
                   setDates({ ...dates, startDate: e.target.value })
                 }}
               ></input>
@@ -271,7 +242,6 @@ const AdminDashboard = () => {
                 required
                 className='mx-3 '
                 onChange={(e) => {
-                  //setFormData({ ...formData, expiryDate: e.target.value })
                   setDates({ ...dates, endDate: e.target.value })
                 }}
                 max={new Date().toISOString().split('.')[0]}

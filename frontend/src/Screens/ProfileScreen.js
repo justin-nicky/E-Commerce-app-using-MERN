@@ -14,7 +14,6 @@ import {
   emailInputBlurHandler,
   passwordInputBlurHandler,
 } from '../helpers/validationHelpers'
-//import { USER_UPDATE_PROFILE_RESET } from '../constants/userConstants'
 
 const ProfileScreen = ({ location, history }) => {
   const [name, setName] = useState('')
@@ -52,13 +51,7 @@ const ProfileScreen = ({ location, history }) => {
     if (!userInfo) {
       history.push('/login')
     } else {
-      if (
-        !user ||
-        !user.name
-        //||user.profileImage === ''
-        //|| success
-      ) {
-        // dispatch({ type: USER_UPDATE_PROFILE_RESET })
+      if (!user || !user.name) {
         dispatch(getUserDetails('profile'))
         dispatch(listMyOrders())
       } else {
@@ -113,27 +106,6 @@ const ProfileScreen = ({ location, history }) => {
       console.log(error)
       setProfileImage(false)
     }
-
-    //   const file = e.target.files[0]
-    //   const formData = new FormData()
-    //   formData.append('image', file)
-    //   //setUploading(true)
-
-    //   try {
-    //     const config = {
-    //       headers: {
-    //         'Content-Type': 'multipart/form-data',
-    //       },
-    //     }
-
-    //     const { data } = await axios.post('/api/upload', formData, config)
-
-    //     setPreviewImage(data)
-    //     //setUploading(false)
-    //   } catch (error) {
-    //     console.error(error)
-    //     //setUploading(false)
-    //   }
   }
 
   return (
@@ -221,11 +193,7 @@ const ProfileScreen = ({ location, history }) => {
                   value={password}
                   onChange={(e) => {
                     setPassword(e.target.value)
-                    // passwordInputChangeHandler(e.target.value, setPasswordError)
                   }}
-                  // onBlur={(e) => {
-                  //   passwordInputBlurHandler(e.target.value, setPasswordError)
-                  // }}
                 ></Form.Control>
                 <span className='text-danger'>{passwordError}</span>
               </Form.Group>
@@ -238,17 +206,7 @@ const ProfileScreen = ({ location, history }) => {
                   value={confirmPassword}
                   onChange={(e) => {
                     setConfirmPassword(e.target.value)
-                    // passwordInputChangeHandler(
-                    //   e.target.value,
-                    //   setConfirmPasswordError
-                    // )
                   }}
-                  // onBlur={(e) => {
-                  //   passwordInputBlurHandler(
-                  //     e.target.value,
-                  //     setConfirmPasswordError
-                  //   )
-                  // }}
                 ></Form.Control>
                 <span className='text-danger'>{confirmPasswordError}</span>
               </Form.Group>

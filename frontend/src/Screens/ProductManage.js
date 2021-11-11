@@ -24,7 +24,6 @@ const ProductManage = ({ history, match }) => {
   const [modal, setModal] = useState({
     show: false,
     id: null,
-    // disable: null,
     name: null,
   })
 
@@ -68,9 +67,7 @@ const ProductManage = ({ history, match }) => {
   ])
 
   const deleteHandler = (id) => {
-    //if (window.confirm('Are you sure')) {
     dispatch(deleteProduct(id))
-    //}
   }
 
   const createProductHandler = () => {
@@ -91,7 +88,6 @@ const ProductManage = ({ history, match }) => {
       </Row>
       {(loadingDelete || loading || loadingCreate) && <Loader />}
       {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
-      {/* {loadingCreate && <Loader />} */}
       {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
       {error ? (
         <Message variant='danger'>{error}</Message>

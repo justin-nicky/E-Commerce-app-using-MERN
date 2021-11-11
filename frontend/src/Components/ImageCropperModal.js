@@ -18,8 +18,6 @@ function ImageCropperModal({
   //change the aspect ratio of crop tool as you preferred
   const [crop, setCrop] = useState({ aspect: 1 / 1 })
 
-  //useEffect(() => console.log(srcImg))
-
   const handleOk = async () => {
     await getCroppedImg()
     setFiles(true)
@@ -32,36 +30,15 @@ function ImageCropperModal({
 
   const uploadImageHandler = async (e, setImage, setLoading) => {
     try {
-      //setLoading(true)
       const url = await fileUpload(e)
       setImage(url)
-      //setLoading(false)
     } catch (error) {
       console.log(error)
-      //setLoading(false)
     }
   }
 
   const getCroppedImg = async () => {
     try {
-      // const canvas = document.createElement('canvas')
-      // const scaleX = image.naturalWidth / image.width
-      // const scaleY = image.naturalHeight / image.height
-      // canvas.width = Math.ceil(crop.width)
-      // canvas.height = Math.ceil(crop.height)
-      // const ctx = canvas.getContext('2d')
-      // ctx.drawImage(
-      //   image,
-      //   crop.x * scaleX,
-      //   crop.y * scaleY,
-      //   crop.width * scaleX,
-      //   crop.height * scaleY,
-      //   0,
-      //   0,
-      //   crop.width,
-      //   crop.height
-      // )
-
       const canvas = document.createElement('canvas')
       const scaleX = image.naturalWidth / image.width
       const scaleY = image.naturalHeight / image.height
@@ -126,30 +103,12 @@ function ImageCropperModal({
                 crop={crop}
                 onChange={setCrop}
               />
-              <div className='p-3'>
-                {/* <Button
-                            onClick={getCroppedImg}
-                        >
-                            Crop
-                        </Button> */}
-              </div>
+              <div className='p-3'></div>
             </div>
           )}
 
           <Center>
-            <Button
-              className='mx-3'
-              variant='primary'
-              onClick={
-                //() => {
-                //toggleEnableDisable(modal.id, modal.disable)
-                //submitHandler()
-                // getCroppedImg(image, crop, setSubImage1)
-                // setCropModalShow(false)
-                handleOk
-              }
-              //}
-            >
+            <Button className='mx-3' variant='primary' onClick={handleOk}>
               Save
             </Button>
             <Button className='mx-3' variant='secondary' onClick={handleCancel}>

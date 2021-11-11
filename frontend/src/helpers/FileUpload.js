@@ -57,14 +57,6 @@ export const fileUpload = (e) => {
     }
 
     if (file) {
-      // Resizer.imageFileResizer(
-      //   file,
-      //   1280,
-      //   720,
-      //   'JPEG',
-      //   65,
-      //   0,
-      //   (uri) => {
       axios
         .post(`/api/upload`, { image: e }, config)
         .then((res) => {
@@ -75,34 +67,6 @@ export const fileUpload = (e) => {
           //console.log('CLOUDINARY UPLOAD ERR', err)
           reject(err)
         })
-      // },
-      // 'base64'
-      // )
     }
   })
 }
-
-// export const handleImageRemove = (public_id) => {
-//   setLoading(true);
-//   // console.log("remove image", id);
-//   axios.post(
-//     `${process.env.REACT_APP_API}/removeimage`,
-//     { public_id },
-//     {
-//       headers: {
-//         authtoken: user ? user.token : "",
-//       },
-//     }
-//   )
-//   .then(res => {
-//       setLoading(false)
-//       const {images} = values
-//       let filteredImages = images.filter((item) =>{
-//           return item.public_id !==public_id;
-//       })
-//       setValues({...values, images:filteredImages });
-//   })
-//   .catch(err => {
-//       console.log(err)
-//       setLoading(false);
-//   })

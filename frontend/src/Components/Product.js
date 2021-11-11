@@ -26,12 +26,6 @@ const Product = ({ product, history, match }) => {
           />
         </Card.Text>
 
-        {/* {(product.discount === 0 || product.categoryDiscount1 === 0) && (
-          <Card.Text as='h4' className='my-3'>
-            ₹ {product.price}
-          </Card.Text>
-        )} */}
-
         {product.discount > 0 || product.categoryDiscount1 > 0 ? (
           <>
             <Card.Text

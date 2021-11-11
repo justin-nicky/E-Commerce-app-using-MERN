@@ -10,34 +10,8 @@ import {
   DataTableCell,
 } from '@david.kucsai/react-pdf-table'
 
-// Create styles
-// const styles = StyleSheet.create({
-//   page: {
-//     flexDirection: 'row',
-//     backgroundColor: '#E4E4E4',
-//   },
-//   section: {
-//     margin: 10,
-//     padding: 10,
-//     flexGrow: 1,
-//   },
-// })
-
 // Create Document Component
 const SalesReport = ({ orders }) => {
-  //   //fetch orders from the backend
-  //   const fetchSalesReport = async (type) => {
-  //     const config = {
-  //       headers: {
-  //         Authorization: `Bearer ${userInfo.token}`,
-  //       },
-  //     }
-  //     const { data } = await axios.get(
-  //       `/api/dashboard/salesreport/${type}`,
-  //       config
-  //     )
-  //     setOrders(data)
-  //   }
   return (
     <Document>
       <Page style={styles.body}>
@@ -140,6 +114,3 @@ const styles = StyleSheet.create({
     color: 'grey',
   },
 })
-// Fullscreen
-// Default view
-// Go to Previous lecture220.

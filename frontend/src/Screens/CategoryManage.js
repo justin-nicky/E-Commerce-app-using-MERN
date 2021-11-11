@@ -56,7 +56,6 @@ const CategoryManage = ({ history }) => {
     }
     if (categories.length === 0 && !categoryListLoading) {
       dispatch(listCategories())
-      //createSuccess = false
     }
   }, [dispatch, history, userInfo, createSuccess, categories])
 

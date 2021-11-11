@@ -28,7 +28,6 @@ const UserManage = ({ history }) => {
 
   const toggleEnableDisable = (id, disable) => {
     dispatch(disableUser(id, disable))
-    //getUsers()
   }
 
   useEffect(() => {

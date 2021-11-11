@@ -29,8 +29,6 @@ const ProductScreen = ({ match, history }) => {
   const productDetails = useSelector((state) => state.productDetails)
   const { loading, product, error } = productDetails
 
-  //setImages(product.images)
-
   useEffect(() => {
     if (!product || !product.name || product._id !== match.params.id) {
       dispatch(listProductDetails(match.params.id))
@@ -82,8 +80,6 @@ const ProductScreen = ({ match, history }) => {
                     magnifierSize={'50%'}
                     square={true}
                   />
-
-                  {/* <Image src={product.previewImage} alt={product.name} fluid /> */}
                 </Carousel.Item>
                 {subImage2 && (
                   <Carousel.Item>
@@ -212,15 +208,6 @@ const ProductScreen = ({ match, history }) => {
                         Add To Cart
                       </Button>
                     </Col>
-                    {/* <Col>
-                      <Button
-                        className='btn-block'
-                        type='button'
-                        disabled={product.countInStock <= 0}
-                      >
-                        Buy Now
-                      </Button>
-                    </Col> */}
                   </Row>
                 </ListGroupItem>
               </ListGroup>

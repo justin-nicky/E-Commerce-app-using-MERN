@@ -101,7 +101,6 @@ const ProductEditScreen = ({ match, history }) => {
       dispatch({ type: PRODUCT_UPDATE_RESET })
       history.push('/admin/manageproducts')
     }
-    //else {
     if (!product || !product.name || product._id !== productId) {
       dispatch(listProductDetails(productId))
     } else if (product.category === 'Sample category') {
@@ -134,7 +133,6 @@ const ProductEditScreen = ({ match, history }) => {
         }
       }
     }
-    //}
   }, [dispatch, history, productId, product, successUpdate, userInfo])
 
   const uploadFileHandler = async (e) => {
@@ -203,15 +201,6 @@ const ProductEditScreen = ({ match, history }) => {
     }
   }
 
-  //   const handleImage = (e) => {
-  //     if (e.target.files.length > 0) {
-  //       setSrcImg(URL.createObjectURL(e.target.files[0]))
-  //       // console.log(e.target.files[0]);
-
-  //       setIsModalVisible(true)
-  //     }
-  //   }
-
   return (
     <>
       <Link to='/admin/manageproducts' className='btn btn-light my-3'>
@@ -275,10 +264,8 @@ const ProductEditScreen = ({ match, history }) => {
                     className='mb-3 fluid'
                     onInput={(e) => {
                       setErrorImg1('')
-                      //uploadImageHandler(e, setSubImage1, setSub1Loading)
                       if (e.target.files.length > 0) {
                         setSrcImg(URL.createObjectURL(e.target.files[0]))
-                        // console.log(e.target.files[0]);
                         setSubImage1(e.target.files[0])
                         setIsModal1Visible(true)
                       }
@@ -312,15 +299,9 @@ const ProductEditScreen = ({ match, history }) => {
                   <Form.Group
                     className='mb-3 fluid'
                     onInput={(e) => {
-                      //   uploadImageHandler(
-                      //     e,
-                      //     setPreviewImage,
-                      //     setPreviewImageLoading
-                      //
                       setErrorImg2('')
                       if (e.target.files.length > 0) {
                         setSrcImg(URL.createObjectURL(e.target.files[0]))
-                        // console.log(e.target.files[0]);
 
                         setIsModal2Visible(true)
                       }
@@ -357,11 +338,8 @@ const ProductEditScreen = ({ match, history }) => {
                       if (e.target.files.length > 0) {
                         setErrorImg3('')
                         setSrcImg(URL.createObjectURL(e.target.files[0]))
-                        // console.log(e.target.files[0]);
-                        //set
                         setIsModal3Visible(true)
                       }
-                      //uploadImageHandler(e, setSubImage2, setSub2Loading)
                     }}
                     style={{
                       cursor: 'pointer',
@@ -670,7 +648,6 @@ const ProductEditScreen = ({ match, history }) => {
               className='mx-3'
               variant='primary'
               onClick={() => {
-                //toggleEnableDisable(modal.id, modal.disable)
                 submitHandler()
                 setModal(false)
               }}
@@ -691,7 +668,6 @@ const ProductEditScreen = ({ match, history }) => {
       <ImageCropperModal
         isModalVisible={isModal1Visible}
         setIsModalVisible={setIsModal1Visible}
-        //showModal={showModal}
         srcImg={srcImg}
         setResult={setSubImage1}
         setFiles={setFiles}
@@ -700,7 +676,6 @@ const ProductEditScreen = ({ match, history }) => {
       <ImageCropperModal
         isModalVisible={isModal2Visible}
         setIsModalVisible={setIsModal2Visible}
-        //showModal={showModal}
         srcImg={srcImg}
         setResult={setPreviewImage}
         setFiles={setFiles}
@@ -709,7 +684,6 @@ const ProductEditScreen = ({ match, history }) => {
       <ImageCropperModal
         isModalVisible={isModal3Visible}
         setIsModalVisible={setIsModal3Visible}
-        //showModal={showModal}
         srcImg={srcImg}
         setResult={setSubImage2}
         setFiles={setFiles}
