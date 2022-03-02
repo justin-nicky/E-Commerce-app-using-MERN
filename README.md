@@ -1,5 +1,5 @@
 # E-Commerce-app-using-MERN
-## Ecommerce application for gadgets
+## Ecommerce application for gadgets (backend)
 [Link to the live application](https://www.justin-nicky.space/)
 ## Features involved:
 * User & Admin Authentication
@@ -30,11 +30,10 @@
 * Nginx
 
 ## Services used:
-*AWS
+* AWS
 * Cloudinary
 * Netlify - for deploying client
 
 ## Future Updations:
------------------------------
 * Wishlist
 * User-Generated Reviews
