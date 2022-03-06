@@ -1,7 +1,7 @@
 # E-Commerce-app-using-MERN
 ## Ecommerce application for gadgets (backend)
 [Link to the live application](https://www.justin-nicky.space/)
-## Features involved:
+## Features:
 * User & Admin Authentication
 * Payment gateways integrated: Razorpay, PayPal
 * Cash On Delivery
